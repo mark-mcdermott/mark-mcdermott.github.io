@@ -79,6 +79,6 @@ console.log(animal) // 'spotted wobbegong'
 
 MDN says ternary ("conditional") chains are right-associative and [Wikipedia](https://en.wikipedia.org/wiki/Operator_associativity) says that means operations are grouped right to left. That's a lot to ponder, but I think we'd expect this one to be grouped like this:
 
-```
+```js
 const animal = mammal ? ( dog ? 'shih tzu' : 'whale' ) : 'spotted wobbegong'
 ```
