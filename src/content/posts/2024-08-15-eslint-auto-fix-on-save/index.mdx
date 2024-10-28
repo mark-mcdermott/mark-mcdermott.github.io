@@ -16,7 +16,7 @@ Let's look at how to use [ESLint](https://eslint.org) to keep our Vue JavaScript
   - update `.vscode/settings.json`: `yes`
 - `npm install`
 - in `~/app/.vscode/settings.json`, change the `codeActionsOnSave` section (lines 7-10) to:
-```
+```json
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always",
     "source.organizeImports": "always"
@@ -26,7 +26,7 @@ Let's look at how to use [ESLint](https://eslint.org) to keep our Vue JavaScript
   - you should see some red underlines for ESLint violations
   - hit `command + s` to save and you should see ESLint automatically fix the issues 🎉
 - add these lines to the `scripts` section of `~/app/package.json`:
-```
+```json
 "lint": "npx eslint .",
 "lint:fix": "npx eslint . --fix"
 ```
