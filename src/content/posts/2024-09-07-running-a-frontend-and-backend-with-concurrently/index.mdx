@@ -56,19 +56,19 @@ You can obviously split panes in a terminal and run the frontend in one terminal
 The easiest way to run two commands in one line in bash is with `&&`. But you can't really use this to run a frontend and a backend at the same time. If you do `rails server && cd ../frontend && npm run dev` the frontend will only start after you stop the backend with `^ + c`. Same thing if you do `npm run dev && cd ../backend && rails server`.
 
 One way around this in Bash is to background one of the servers. Although it has some drawbacks, this will work:
-```
+```bash
 npm run dev & cd ../backend && rails server
 ```
 Although this generally shows the output of both the front and back, you don't see the initial output of the backend. Also the output is pretty hard to read - nothing is prefixed with something like `[FRONTEND]` and nothing is color coded.
 
 You actually can prefix output with something like `[FRONTEND]` in Bash, too:
-```
+```bash
 (cd ../frontend && npm run dev 2>&1 | sed 's/^/[FRONTEND] /') & (cd ../backend && rails s 2>&1 | sed 's/^/[BACKEND] /')
 ```
 This prefixes the output the way we want, but is not color coded.
 
 This does the color coding and the prefixing:
-```
+```bash
 (cd ../frontend && npm run dev 2>&1 | sed $'s/^/\033[0;33m[FRONTEND]\033[0m /') & (cd ../backend && rails s 2>&1 | sed $'s/^/\033[0;32m[BACKEND]\033[0m /')
 ```
 One problem with these methods is they do not clear the ports correctly when you `^ + c` to stop the servers. One will be left running. We could add something to the beginning of that one-liner like `kill -9 $(lsof -t -i:3001)`, but at this point you're probably seeing the upside of using Concurrently - it's much simpler and cleaner. It correctly clears both ports when you `^ + c` and the command to run it is much simpler.
