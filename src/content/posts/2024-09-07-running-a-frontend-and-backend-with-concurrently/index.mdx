@@ -6,21 +6,21 @@ href: concurrently
 ---
 ## Starting A Frontend/Backend With Concurrently
 There are many ways to start a frontend and the backend locally with one command. In my experience, the npm package called [concurrently](https://www.npmjs.com/package/concurrently) is the best. You install it with just `npm install --save-dev concurrently` and my favorite way to run it is from frontend folder with a line in the `package.json` `scripts` section like this:
-```
+```json
 "front-and-back-dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"green,yellow\" \"cd ../backend && rails server\" \"npm run dev\""
 ```
 This shows you the output of both the front and back with all the backend output in green and prefixed with `[BACKEND]` and all the frontend output in yellow prefixed with `[FRONTEND]`.
 
 If you don't want the color coding, it's just:
-```
+```json
 "front-and-back-dev": "concurrently -n \"BACKEND,FRONTEND\" \"cd ../backend && rails server\" \"npm run dev\""
 ```
 And if you don't want the prefixing, it's just
-```
+```json
 "front-and-back-dev": "concurrently \"cd ../backend && rails server\" \"npm run dev\""
 ```
 If you want to make this cleaner still, you can add script lines for the backend and reference that in the Concurrently script:
-```
+```json
 "rails-server": "cd ../backend && rails server",
 "front-and-back-dev": "concurrently \"npm run rails-server\" \"npm run dev\"",
 ```
@@ -41,7 +41,7 @@ echo "Ok, rails server is up and running - let's start testing!"
 ```
 - Run `chmod +x wait-for-rails.sh` to give our script executable permissions.
 - Then add this to your `package.json` `scripts` section:
-```
+```json
     "rails-server": "cd ../backend && rails server",
     "front-and-back-dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"green,yellow\" \"npm run rails-server\" \"npm run dev\"",
     "e2e-tests": "concurrently -n \"BACKEND,FRONTEND\" -c \"green,yellow\" \"npm run rails-server\" \"./wait-for-rails.sh && npm run vitest\""
