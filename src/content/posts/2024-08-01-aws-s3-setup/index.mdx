@@ -1,0 +1,149 @@
+---
+title: AWS S3
+date: 2024-08-01T03:09:00.000Z
+spoiler: How to setup AWS S3
+href: how-to-setup-aws-s3
+---
+### AWS S3 Setup
+Let's create an AWS S3 account so we can store user avatar images there as well as any other file uploads we might need. There are a few parts here. We want to create a S3 bucket to store the files. But a S3 bucket needs a IAM user. Both the S3 bucket and the IAM user need permissions policies. There's a little bit of a chicken and egg issue here - when we create the user permissions policy, we need the S3 bucket name. But when we create the S3 bucket permissions, we need the IAM user name. So we'll create everything and use placeholder strings in some of the policies. Then when we're all done, we'll go through the policies and update all the placeholder strings to what they really need to be.
+
+#### AWS General Setup
+- login to AWS (https://aws.amazon.com)
+  - If you don't have an AWS account, you'll need to sign up. It's been awhile since I did this part - I think you have to create a root user and add you credit card or something. Google it if you run into trouble with this part.
+- at top right, select a region if currently says `global` (I use the `us-east-1` region). If all the region options are grayed out, ignore this for now and we'll set it later.
+- at top right click your name
+  - next to Account ID, click the copy icon (two overlapping squares)
+  - make an `app` folder: `mkdir ~/app`
+  - create a `.secrets` file: `touch ~/app/.secrets`
+  - paste your Account ID in your `~/app/.secrets` file (It pastes without the dashes. Leave it that way - you need it without the dashes.)
+
+#### AWS User Policy
+- in searchbar at top, enter `iam` and select IAM
+- click `Policies` in the left sidebar under Access Managment
+  - click `Create policy` towards the top right
+  - click the `JSON` tab on Policy Editor
+  - under Policy Editor select all with `command + a` and then hit `delete` to clear out everything there
+  - enter this under Policy Editor (we'll update it shortly, once we have our user and bucket names):
+```
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowGetObject",
+			"Effect": "Allow",
+			 "Action": [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject"
+            ],
+			"Resource": ["arn:aws:s3:::<development bucket name>", "arn:aws:s3:::<production bucket name>"]
+		}
+	]
+}
+```
+  - click Next towards bottom right
+  - for Policy Name, enter `app-s3-user-policy`
+  - paste your policy name in your `.secrets` file
+  - click Create Policy towards the bottom right
+
+#### AWS User
+- click `Users` under Access Management in the left sidebar
+  - click `Create User` towards the top right
+  - enter name, something like `app-s3-user` (add this to your `.secrets` file - you'll need it later)
+  - click Next
+  - under Permissions Options click `Attach policies directly`
+  - in the search bar under Permissions Policies, enter `app-s3-user-policy` -> this should then show the policy we just created above (`app-s3-user-policy`) under Policy Name
+  - under Policy Name, click the checkbox to the left of `app-s3-user-policy`
+  - click Next
+  - click Create User towards the bottom right
+- under Users, click the name of the user we just created (`app-user`)
+  - click Security Credentials tab
+  - click `Create Access key` towards the top right
+    - Use case: `Local code`
+    - check `I understand the above recommendation`
+    - Next
+    - Description tag value: enter tag name, like `app-user-access-key`
+    - click `Create access key` towards the bottom right
+    - paste both the Access Key and the Secret Access Key into your `.secrets` file - this is important!
+    - click Done
+
+#### AWS S3 Bucket
+- in searchbar at top, enter `s3` and select S3
+- Create Bucket
+  - for Bucket Name, enter something like `app-s3-bucket-development` (below when you click Create Bucket, it may tell you this bucket already exists and you will have to make it more unique. Regardless, add this to your `.secrets` file - you'll need it later. Also, make sure it ends in `-development`.)
+  - under Object Ownership, click ACLs Enabled
+  - under Block Public Access settings
+    - uncheck the first option, `Block All Public Access`
+    - check the last two options, `Block public access to buckets and objects granted through new public bucket or access point policies` and `Block public and cross-account access to buckets and objects through any public bucket or access point policies`
+  - check `I acknowledge that the current settings might result in this bucket and the objects within becoming public.`  
+  - scroll to bottom and click Create Bucket (if nothing happens, scroll up and look for red error messages)
+- under General Purpose Buckets, click the name of the bucket you just created -> then click the Permissions tab towards the top
+  - in the Bucket Policy section, click Edit (to the right of "Bucket Policy")
+  - copy/paste the boilerplate json bucket policy in the next line below this into the text editor area under Policy.
+  - here is the boilerplate json bucket policy:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<aws acct id without dashes>:user/<iam username>"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::<bucket name>"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::<aws acct id without dashes>:user/<iam username>"
+            },
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::<bucket name>/*"
+        }
+    ]
+}
+```
+  - Update all the `<aws acct id without dashes>`, `<iam username>` and `<bucket name>` parts in the policy now in the text editor area under Policy with the account number, user name and bucket name you jotted down above in your `~/app/.secrets` file.
+  - click Save Changes towards the bottom right
+  - in the Cross-Origin Resource Sharing (CORS) section, click `Edit` (to the right of "Cross-origin resource sharing (CORS)")
+  - under Cross-origin Resource Sharing (CORS) add this:
+```
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": [],
+        "MaxAgeSeconds": 3000
+    }
+]
+```
+  - click Save Changes towards the bottom right
+- now repeat this entire "AWS S3 Bucket" step above again, but make a production s3 bucket named something like `app-s3-bucket-production` and note the production bucket name in your `.secrets` file
+- now that we know our bucket names, let's update the our user policy with the bucket name
+  - in the searchbar at the top of the page, type `iam` and select `IAM`
+  - click `Policies` in the left sidebar under Access Management
+  - in the searchbar under Policies, type `app-s3-user-policy` -> click `app-s3-user-policy` under Policy Name
+  - click Edit towards the top right
+  - in the Policy Editor text editor area, change the line `"Resource": ["arn:aws:s3:::<development bucket name>", "arn:aws:s3:::<production bucket name>"]` replace `<development bucket name>` and `<production bucket name>` with your development bucket name and production bucket name, respectively, in your `.secrets` file
+  - click Next towards the bottom right
+  - click Save Changes towards the bottom right
+- see what region you're logged into
+  - click the AWS logo in the top left
+  - in the top right there will be a region dropdown - click it
+  - look at the highlighted region in the dropdown and look for the region string to the right of it - something like `us-east-1`
+  - paste your region string in your `~/app/.secrets` file in the `aws region` line

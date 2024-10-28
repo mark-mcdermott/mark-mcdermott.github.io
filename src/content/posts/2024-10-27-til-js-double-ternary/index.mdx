@@ -1,0 +1,84 @@
+---
+title: "Double Ternary"
+date: 2024-10-27T05:19:00.000Z
+spoiler: i.e., JavaScript The Bad Parts
+href: javascript-double-ternary-conditional-chains
+---
+This is might be venturing into *JavaScript: The Bad Parts*, but my mind was blown today when ChatGPT answered a question I had with a JavaScript double ternary. I'd never heard of it before. [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator#conditional_chains) more aptly calls these "conditional chains".
+
+```js
+> const mammal = true
+> const dog = false
+> const animal = mammal ? dog ? 'shih tzu' : 'whale' : 'spotted wobbegong'
+> animal
+'whale'
+```
+
+```js
+> const mammal = false
+> const animal = mammal ? dog ? 'shih tzu' : 'whale' : 'spotted wobbegong'
+> animal
+'spotted wobbegong'
+```
+
+I believe the proper way to format the above (to make it less horrible), would be
+
+```js
+const animal = mammal
+  ? dog // if mammal...
+    ? 'shih tzu' // ...if dog then 'shih tzu'
+    : 'whale' // else 'whale'
+  : 'spotted wobbegong' // else 'spotted wobbegong'
+```
+
+Actually, it's still pretty cruel and unusual. But the different branches would evaluate like this:
+
+```js
+const mammal = true
+const dog = true
+const animal = mammal
+  ? dog
+    ? 'shih tzu'
+    : 'whale'
+  : 'spotted wobbegong'
+console.log(animal) // 'shih tzu'
+```
+
+```js
+const mammal = true
+const dog = false
+const animal = mammal
+  ? dog
+    ? 'shih tzu'
+    : 'whale'
+  : 'spotted wobbegong'
+console.log(animal) // 'whale'
+```
+
+```js
+const mammal = false
+const dog = true
+const animal = mammal
+  ? dog
+    ? 'shih tzu'
+    : 'whale'
+  : 'spotted wobbegong'
+console.log(animal) // 'spotted wobbegong'
+```
+
+```js
+const mammal = false
+const dog = false
+const animal = mammal
+  ? dog
+    ? 'shih tzu'
+    : 'whale'
+  : 'spotted wobbegong'
+console.log(animal) // 'spotted wobbegong'
+```
+
+MDN says ternary ("conditional") chains are right-associative and [Wikipedia](https://en.wikipedia.org/wiki/Operator_associativity) says that means operations are grouped right to left. That's a lot to ponder, but I think we'd expect this one to be grouped like this:
+
+```
+const animal = mammal ? ( dog ? 'shih tzu' : 'whale' ) : 'spotted wobbegong'
+```

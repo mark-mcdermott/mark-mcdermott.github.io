@@ -1,0 +1,23 @@
+---
+title: "Underscore Separators"
+date: 2024-05-01T06:22
+spoiler: Underscores in numbers in JavaScript & Ruby
+href: underscore-separators
+---
+Had a "whoa" moment today when I learned that both javascript and ruby accept underscores in numbers. Underscores are used where commas or periods would be and are just ignored when parsing the number.
+## JavaScript 
+```
+> console.log(1_000)
+1000
+undefined
+> console.log(1_000 + 2_000)
+3000
+```
+## Ruby
+```
+> puts 1_000_000
+1000000
+ => nil
+> puts 1_000 + 2_000
+3000
+```
