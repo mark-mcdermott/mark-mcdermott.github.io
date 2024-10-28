@@ -8,7 +8,7 @@ I've probably looked this up and done it a million times over the years, but it 
 
 Example:
 
-```
+```bash
 ❯ lsof -i :3000
 COMMAND   PID       USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
 ruby    10192 mmcdermott   12u  IPv4 0x17ec2e84526c5d0b      0t0  TCP localhost:hbci (LISTEN)
@@ -18,7 +18,7 @@ ruby    10192 mmcdermott   13u  IPv6 0x17ec2e7f89b9dfbb      0t0  TCP localhost:
 
 A nice one liner for this is:
 
-```
+```bash
 kill -9 $(lsof -t -i:3000)
 ```
 
