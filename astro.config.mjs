@@ -11,7 +11,7 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://mark-mcdermott.github.io",
+  site: "https://markmcdermott.io",
   integrations: [tailwind(), react(), mdx()],
   image: {
     domains: ["https://github.com"],
