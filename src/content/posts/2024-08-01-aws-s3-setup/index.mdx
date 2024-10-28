@@ -24,7 +24,7 @@ Let's create an AWS S3 account so we can store user avatar images there as well 
   - click the `JSON` tab on Policy Editor
   - under Policy Editor select all with `command + a` and then hit `delete` to clear out everything there
   - enter this under Policy Editor (we'll update it shortly, once we have our user and bucket names):
-```
+```json
 {
 	"Version": "2012-10-17",
 	"Statement": [
@@ -81,7 +81,7 @@ Let's create an AWS S3 account so we can store user avatar images there as well 
   - in the Bucket Policy section, click Edit (to the right of "Bucket Policy")
   - copy/paste the boilerplate json bucket policy in the next line below this into the text editor area under Policy.
   - here is the boilerplate json bucket policy:
-```
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -112,7 +112,7 @@ Let's create an AWS S3 account so we can store user avatar images there as well 
   - click Save Changes towards the bottom right
   - in the Cross-Origin Resource Sharing (CORS) section, click `Edit` (to the right of "Cross-origin resource sharing (CORS)")
   - under Cross-origin Resource Sharing (CORS) add this:
-```
+```json
 [
     {
         "AllowedHeaders": [
