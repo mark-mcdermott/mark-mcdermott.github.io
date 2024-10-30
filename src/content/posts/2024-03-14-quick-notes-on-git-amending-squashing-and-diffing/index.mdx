@@ -17,3 +17,10 @@ href: quick-git-notes
 | see a branch's changes             | `git diff main`                                        |
 | see a branch's divergent changes   | `git diff main...branch`                               |
 | see diff between two commits       | `git diff hash1...hash2`                               |
+
+---
+
+### When you accidentally make a commit on master that you need on a new branch (and you haven't pushed it up to the remote yet)
+- `git branch new-branch`
+- `git reset --hard HEAD~1`
+- `git checkout new-branch`
