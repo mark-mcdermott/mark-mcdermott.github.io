@@ -4,9 +4,9 @@ date: 2024-11-14T05:19:00.000Z
 spoiler: git reset HEAD~
 href: git-undo-last-commit
 ---
-Yesterday I ran into am issue where I committed some changes locally in git and then wished I hadn't. And I realized my last post about git, my Git Cheatsheet, didn't have how to undo the last local commit. Turns out it's one of the easiest things to do in git - 'git reset HEAD~'. It *just works*. All files committed in the last commit will now show as unstaffed with modifications, just like they were before you committed.
+Yesterday I ran into am issue where I committed some changes locally in git and then wished I hadn't. And I realized my last post about git, my Git Cheatsheet, didn't have how to undo the last local commit. Turns out it's one of the easiest things to do in git - `git reset HEAD~`. It *just works*. All files committed in the last commit will now show as unstaffed with modifications, just like they were before you committed.
 
-Of course, nothing with git is ever this simple. git reset has soft, mixed and hard options. When we omit those options, it defaults to mixed, which means unstage changes made after the last commit. Soft means unstage everything. Hard means ignore everything, which of course is destructive.
+Of course, nothing with git is ever this simple. git reset has `soft`, `mixed` and `hard` options. When we omit those options, it defaults to `mixed`, which means unstage changes made after the last commit. `soft` means unstage everything. `hard` means ignore everything, which of course is destructive.
 
 ### Sources (accessed 11/14/24)
 * [Stack Overflow: "How do I undo the most recent local commits in Git?"](https://stackoverflow.com/posts/927386/revisions)
