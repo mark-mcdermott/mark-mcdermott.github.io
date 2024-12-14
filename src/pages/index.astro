@@ -24,9 +24,7 @@ for (const post of posts) {
     .use(remarkRehype)
     .use(rehypeStringify)
     .process(spoilerMarkdown);
-
   post.frontmatter.spoilerHTML = String(processed);
-  console.log("Processed spoiler for", post.frontmatter.title, post.frontmatter.spoilerHTML);
 }
 ---
 
