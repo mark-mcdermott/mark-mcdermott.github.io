@@ -25,10 +25,6 @@ posts.sort((a, b) => {
             href={"/" + item.frontmatter.href + "/"}
           >
             <article>
-              <PostTitle
-                title={item.frontmatter.title}
-                date={item.frontmatter.date}
-              />
               <p class="text-[13px] text-gray-700 dark:text-gray-300">
                 {new Date(item.frontmatter.date).toLocaleDateString("cn", {
                   day: "2-digit",
@@ -36,6 +32,10 @@ posts.sort((a, b) => {
                   year: "numeric",
                 })}
               </p>
+              <PostTitle
+                title={item.frontmatter.title}
+                date={item.frontmatter.date}
+              />
               <p class="mt-1">{item.frontmatter.spoiler}</p>
             </article>
           </Link>
