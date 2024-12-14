@@ -42,15 +42,10 @@ I considered a few different technologies for this blog:
 
 ### Tradeoffs 
 - No tags / no search: Not having tags on the blog posts make it harder to sort through posts to find what you want. No search makes it even harder. Building these out in Astro might be a fun project sometime.
-
 - No comments: The lack of WordPress-like comments is both a pro and a con. The blog looks cleaner, I don't have to worry about spam or moderate anything, but I also don't get the feedback or engagement that comments give. I've seen some blogs use GitHub issues for comments and I plan on looking into that more.
-
 - A new framework to learn. Astro is much simpler than Nuxt or Rails, but it's still a new thing to learn. It was my first time using MDX and I thought it was a bit odd, but it does the trick and I enjoy it's simple approach to components. I also was unable to port some of my blog posts that were very code-heavy. Certain characters like backslashes break the post and so far I haven't found a solution like escape characters that fix it, but I do plan on working that out because I like posting large code tutorials.
-
 - No CI/CD: I miss running tests on CircleCI a bit - it was a nice safety net.
-
 - No big framework: The advantage of the big-framework approach for me was that I could embed my projects I wanted to showcase right into my site. I'll probably end up linking out to my projects hosted on something like fly.io instead.
-
 - No database: Having my content in markdown files with frontmatter makes it less portable. I can't just export my content and import it into another blog engine. I'd have to write a script to parse the markdown files and store the content in a database.
 
 ### Conclusion
