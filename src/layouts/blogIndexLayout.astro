@@ -1,9 +1,10 @@
 ---
 import Layout from "./layout.astro";
 import Header from "@/components/header.astro";
+const { bodyMaxWidth = "max-w-2xl" } = Astro.props;
 ---
 
-<Layout>
+<Layout bodyMaxWidth={bodyMaxWidth}>
   <slot name="header">
     <Header />
   </slot>
