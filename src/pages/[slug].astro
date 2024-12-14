@@ -55,14 +55,15 @@ const readTime = readTimeStr(words)
     </p>
     <div class="markdown mt-10">
       <Content />
+      <!-- @ts-expect-error: Custom attributes for Utterances script -->
       <script is:inline
         src="https://utteranc.es/client.js"
         repo="mark-mcdermott/mark-mcdermott.github.io"
         issue-term="pathname"
         theme="github-light"
         crossorigin="anonymous"
-        async>
-      </script>
+        async
+      ></script>
     </div>
   </article></BlogLayout
 >
