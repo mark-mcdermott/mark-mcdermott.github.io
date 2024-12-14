@@ -5,13 +5,15 @@ import HomeLink from "@/components/homeLink.astro";
 ---
 
 <Layout>
-  <slot name="header">
-    <Header />
-  </slot>
+  <body class="mx-auto max-w-2xl bg-[--bg] px-5 py-12 text-[--text]">
+    <slot name="header">
+      <Header />
+    </slot>
 
-  <slot />
+    <slot />
 
-  <footer class="mt-12">
-    <HomeLink />
-  </footer>
+    <footer class="mt-12">
+      <HomeLink />
+    </footer>
+  </body>
 </Layout>
