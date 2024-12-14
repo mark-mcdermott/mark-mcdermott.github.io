@@ -4,13 +4,11 @@ import Header from "@/components/header.astro";
 ---
 
 <Layout>
-  <body class="mx-auto max-w-7xl bg-[--bg] px-5 py-12 text-[--text]">
-    <slot name="header">
-      <Header />
-    </slot>
+  <slot name="header">
+    <Header />
+  </slot>
 
-    <main>
-      <slot />
-    </main>
-  </body>
+  <main>
+    <slot />
+  </main>
 </Layout>
