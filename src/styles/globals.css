@@ -71,3 +71,11 @@
 .markdown ul {
   margin-left: 1rem;
 }
+
+.blog-index code {
+  border-radius: 10px;
+  background: var(--inlineCode-bg);
+  color: var(--inlineCode-text);
+  padding: 0.15em 0.2em 0.05em;
+  white-space: normal;
+}

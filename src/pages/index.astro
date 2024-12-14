@@ -4,43 +4,57 @@ import Link from "../components/link.astro";
 import PostTitle from "../components/postTitle.astro";
 import type { Frontmatter } from "./types";
 
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+
 const posts = await Astro.glob<Frontmatter>("../content/posts/**/*.mdx");
 posts.sort((a, b) => {
   return Date.parse(a.frontmatter.date) < Date.parse(b.frontmatter.date)
     ? 1
     : -1;
 });
+
+// Pre-process the HTML for each post’s spoiler
+for (const post of posts) {
+  const spoilerMarkdown = post.frontmatter.spoiler || '';
+  const processed = await unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypeStringify)
+    .process(spoilerMarkdown);
+
+  post.frontmatter.spoilerHTML = String(processed);
+  console.log("Processed spoiler for", post.frontmatter.title, post.frontmatter.spoilerHTML);
+}
 ---
 
 <Layout>
   <div class="relative -top-[10px] flex flex-col gap-8">
     {
-      posts.map((item) => {
-        return (
-          <Link
-            classList={[
-              "block scale-100 py-4 hover:scale-[1.005] active:scale-100",
-            ]}
-            target="_self"
-            href={"/" + item.frontmatter.href + "/"}
-          >
-            <article>
-              <p class="text-[13px] text-gray-700 dark:text-gray-300">
-                {new Date(item.frontmatter.date).toLocaleDateString("cn", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </p>
-              <PostTitle
-                title={item.frontmatter.title}
-                date={item.frontmatter.date}
-              />
-              <p class="mt-1">{item.frontmatter.spoiler}</p>
-            </article>
-          </Link>
-        );
-      })
+      posts.map((item) => (
+        <Link
+          classList={["block scale-100 py-4 hover:scale-[1.005] active:scale-100"]}
+          target="_self"
+          href={"/" + item.frontmatter.href + "/"}
+        >
+          <article>
+            <p class="text-[13px] text-gray-700 dark:text-gray-300">
+              {new Date(item.frontmatter.date).toLocaleDateString("cn", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
+            </p>
+            <PostTitle
+              title={item.frontmatter.title}
+              date={item.frontmatter.date}
+            />
+            <div class="mt-1" set:html={item.frontmatter.spoilerHTML}></div>
+          </article>
+        </Link>
+      ))
     }
   </div>
 </Layout>
