@@ -13,10 +13,10 @@ Simplicity: Astro/GitHub Pages/GitHub User Site keeps things simple. No more big
 It's free and easy to use.
 
 #### Why no portfolio site?
-Small number of pages: I sort of combined the about/projects/contact page into one page and moved it to GitHub’s user site where everything is just a single readme file. The blog page is now the only page I really have to maintain or think about at all.
+Low maintenace: I sort of combined the about/projects/contact page into one page and moved it to GitHub’s user site where everything is just a single readme file. The blog page is now the only page I really have to maintain or think about at all.
 
 #### Why no real CMS?
-Simplicity: Using GitHub as the CMS is awesome. I’m in GitHub all the time anyway, so I don’t really need to log into a separate CMS.
+Speed: Using GitHub as the CMS is awesome. I’m in GitHub all the time anyway, so I don’t really need to log into a separate CMS.
 
 #### Why markdown?
 Quick post creation: Astro supports markdown files, so I can write my posts in markdown and frontmatter like I was used to with Nuxt Content.
