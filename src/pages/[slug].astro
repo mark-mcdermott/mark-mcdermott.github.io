@@ -6,6 +6,10 @@ import type { MarkdownInstance } from "astro";
 import fs from "node:fs";
 import { getPostWords, readTimeStr } from "@/utils/utils";
 import "@fontsource/montserrat/900.css";
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
 
 const pathname = Astro.url.pathname;
 const isActive = pathname === "/";
@@ -34,6 +38,15 @@ const { Content, frontmatter } = Astro.props.post;
 const { fileContent } = Astro.props;
 const words = getPostWords(fileContent);
 const readTime = readTimeStr(words)
+
+// Pre-process the HTML for each post’s spoiler
+const spoilerMarkdown = Astro.props.post.frontmatter.spoiler || '';
+const processed = await unified()
+  .use(remarkParse)
+  .use(remarkRehype)
+  .use(rehypeStringify)
+  .process(spoilerMarkdown);
+  Astro.props.post.frontmatter.spoilerHTML = String(processed);
 ---
 
 <BlogLayout
@@ -53,7 +66,7 @@ const readTime = readTimeStr(words)
     >
       {frontmatter.title}
     </h1>
-    <div class="mt-1" style="color: var(--purple)">{frontmatter.spoiler}</div>
+    <div class="mt-1 post-subtitle" style="color: var(--purple)" set:html={frontmatter.spoilerHTML}></div>
     <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300">
       {
         new Date(frontmatter.date).toLocaleDateString("cn", {
