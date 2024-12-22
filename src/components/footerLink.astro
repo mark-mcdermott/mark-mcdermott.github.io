@@ -1,0 +1,33 @@
+---
+import "@fontsource/montserrat/900.css";
+import Link from "./link.astro";
+
+const pathname = Astro.url.pathname;
+const isActive = pathname === "/";
+---
+
+<Link
+  classList={[
+    "inline-block text-2xl font-black font-['Montserrat']",
+    { "hover:scale-[1.02]": !isActive },
+  ]}
+  target="_self"
+  href="/"
+  ><span
+    >markmcdermott.io</span
+  ></Link
+>
+<p>
+  <a href="https://github.com/mark-mcdermott">github</a> | 
+  <a href="https://bsky.app/profile/mark-mcdermott.bsky.social">bluesky</a> | 
+  <a href="https://www.linkedin.com/in/mark-mcdermott-6a174916/">linkedin</a></p>
+<p>&copy; { new Date().getFullYear() } mark mcdermott </p>
+
+<style>
+  a, p { margin-left: auto }
+  p { font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+      font-weight: 300;
+      font-size: .95rem; }
+  p a { text-decoration: underline }
+  p a:hover { color: var(--pink) }
+</style>
