@@ -1,6 +1,7 @@
 ---
 import Layout from "./layout.astro";
 import Header from "@/components/header.astro";
+import FooterLink from "@/components/footerLink.astro";
 const { bodyMaxWidth = "max-w-2xl" } = Astro.props;
 ---
 
@@ -12,4 +13,16 @@ const { bodyMaxWidth = "max-w-2xl" } = Astro.props;
   <main class="blog-index">
     <slot />
   </main>
+
+  <footer class="mt-12">
+    <FooterLink />
+  </footer>
 </Layout>
+
+<style>
+  footer {  
+    display: flex;
+    flex-flow: column wrap;
+    align-content: flex-end;
+  }
+</style>
