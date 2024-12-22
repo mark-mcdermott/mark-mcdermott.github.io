@@ -7,6 +7,9 @@ import fs from "node:fs";
 import { getPostWords, readTimeStr } from "@/utils/utils";
 import "@fontsource/montserrat/900.css";
 
+const pathname = Astro.url.pathname;
+const isActive = pathname === "/";
+
 export async function getStaticPaths() {
   const posts = (await Astro.glob(
     "../content/posts/**/*.mdx"
@@ -36,11 +39,21 @@ const readTime = readTimeStr(words)
 <BlogLayout
   ><article>
     <h1
-      class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']"
+      class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']" 
+      style={{
+        "--myColor1": isActive ? "var(--text)" : "var(--pink)",
+        "--myColor2": isActive ? "var(--text)" : "var(--purple)",
+        backgroundImage:
+          "linear-gradient(45deg, var(--myColor1), var(--myColor2))",
+        backgroundClip: "text",
+        WebkitBackgroundClip: "text",
+        color: "transparent",
+        transition: "--myColor1 0.2s ease-out, --myColor2 0.2s ease-in-out",
+      }}
     >
       {frontmatter.title}
     </h1>
-    <div class="mt-1" set:html={frontmatter.spoilerHTML}></div>
+    <div class="mt-1" style="color: var(--purple)" set:html={frontmatter.spoilerHTML}></div>
     <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300">
       {
         new Date(frontmatter.date).toLocaleDateString("cn", {
