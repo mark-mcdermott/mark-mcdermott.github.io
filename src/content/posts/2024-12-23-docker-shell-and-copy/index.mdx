@@ -1,0 +1,26 @@
+---
+title: Docker: Shell and Copy
+spoiler: Access shell in container and copy files
+date: 12/23/24
+href: docker-shell-and-copy
+---
+
+I've been learning Docker lately and learned a few new things last night: how to access a shell in a running container and how to copy files to and from a container.
+
+## Access Shell in Container
+`docker exec -it <container_name_or_id> sh`
+
+- `exec` runs a command inside a container
+- `-i` is for "interactive" mode
+- `-t` is for "teletype", i.e. a shell
+- a container will have an id by default, something like `e4ef2fab0a5d`. You can get the id by running `docker ps`.
+- you can give a container a name if you want when creating it with `docker run --name <custom_name> <image>`
+- `sh` is the shell you want to run. You can also use `bash` or `zsh` if they're installed in the container.
+
+## Copy File from Container
+`docker cp <container_name_or_id>:<path_in_container> <path_on_host>`
+- `cp` is "copy"
+
+## Copy File to Container
+`docker cp <path_on_host> <container_name_or_id>:<path_in_container>`
+- the is the same as above but the paths are reversed, so the order of the paths is what determines the direction of the copy.
