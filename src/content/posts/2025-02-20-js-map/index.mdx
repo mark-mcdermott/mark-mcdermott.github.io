@@ -16,10 +16,10 @@ The callback function has three optional parameters: element, index and array. T
 ### `.map()` callback parameter
 
 #### element parameter
-`console.log([1,2,3].map(x => x*2))` outputs: `[2, 4, 6]`// `[2*2, 2*2, 3*2]`
+`console.log([1,2,3].map(x => x*2))` outputs: `[2, 4, 6]` `// [2*2, 2*2, 3*2]`
 
 #### index parameter
-`console.log([1,2,3].map((x,i) => x*i))` outputs: `[0, 2, 6]` // `[1*0, 2*1, 3*2]`
+`console.log([1,2,3].map((x,i) => x*i))` outputs: `[0, 2, 6]` `// [1*0, 2*1, 3*2]`
 
 #### array parameter
 ```
@@ -54,3 +54,7 @@ const doubled = numbers.map(function(num) {
 
 console.log(doubled); // outputs [2, 4, 6]
 ```
+
+### Source
+- *MDN*, ["Array.prototype.map()"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map). accessed 2/20/25
+- I used [ChatGPT 4o](https://chatgpt.com) for the `thisArg` example. accessed 2/20/25
