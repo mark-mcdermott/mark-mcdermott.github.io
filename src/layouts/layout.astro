@@ -1,9 +1,8 @@
 ---
-const { bodyMaxWidth = 'max-w-2xl' } = Astro.props; 
+const { bodyMaxWidth = "max-w-2xl" } = Astro.props;
 import "@/styles/globals.css";
 import "@fontsource/merriweather";
 import { ViewTransitions } from "astro:transitions";
-import LoadingIndicator from "astro-loading-indicator/component";
 ---
 
 <!doctype html>
@@ -15,7 +14,6 @@ import LoadingIndicator from "astro-loading-indicator/component";
     <meta name="generator" content={Astro.generator} />
     <title>Mark McDermott</title>
     <ViewTransitions />
-    <LoadingIndicator color="#7e22ce" />
   </head>
   <body class={`mx-auto ${bodyMaxWidth} bg-[--bg] px-5 py-12 text-[--text]`}>
     <slot />
