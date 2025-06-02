@@ -19,8 +19,12 @@
   @apply pt-8 opacity-60 dark:opacity-10;
 }
 
+.markdown h1 {
+  @apply mt-2 pb-8 text-4xl font-bold font-['Montserrat'];
+}
+
 .markdown h2 {
-  @apply mt-2 pb-8 text-3xl font-bold;
+  @apply mt-2 pb-8 text-3xl font-bold font-['Montserrat'];
 }
 
 .markdown h3 {
@@ -31,7 +35,7 @@
   @apply mt-2 pb-8 text-xl font-bold;
 }
 
-.markdown :not(pre) > code {
+.markdown :not(pre)>code {
   border-radius: 10px;
   background: var(--inlineCode-bg);
   color: var(--inlineCode-text);
