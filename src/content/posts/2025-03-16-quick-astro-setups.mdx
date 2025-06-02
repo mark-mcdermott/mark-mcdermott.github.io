@@ -1,0 +1,51 @@
+---
+title: "Astro Learnings"
+spoiler: Various Astro how-tos
+date: '3/16/25'
+href: quick-astro-setups
+---
+
+# Honing basic Astro areas
+
+Astro's pretty easy to use, but I've been a little rusty and wanted to get some of the common stuff into muscle memory. Here are my notes.
+
+## Things I want to cover
+- Astro create CLI
+- Sass
+- Tailwind
+- markdown
+
+## Starter templates
+
+The Astro [create CLI](https://docs.astro.build/en/install-and-setup/) is pretty straightforward. `yarn create astro <name>` will create the folder and an Astro project in it. It will ask you if you want to use a template and if create a git repo or not.
+
+For templates, Astro has about four options you can pick in the CLI. They have many more official templates you can use, some free some not. Even some of the free ones look amazing and the paid ones look really solid. And you can use any Astro git repo as a template, it doesn't have to be an official one.
+
+You can also specify any integrations you want here, too. Examples are Tailwind, Vue, astro-font, analytics, lucide fonts, auth, etc.
+
+The `--install`/`--no-install` flag will install/not install the dependencies for you.
+
+`yarn create astro <name>`
+`yarn create astro .`
+`yarn create astro --template <name>`
+`yarn create astro --git / --no-git`
+`yarn create astro --install / --no-install`
+`yarn create astro --add mdx`
+
+## Tailwind
+Instructions to add Tailwind are [here](https://docs.astro.build/en/guides/styling/#add-tailwind-4)
+- `yarn astro add tailwind` (hit enter for all the questions)
+- this scaffolds `src/styles/global.css` and adds `@import "tailwindcss";` to the top.
+- make sure to import `global.css` to your appropriate `.astro` file
+
+## Sass
+- `yarn add -D sass`
+- you can now:
+  - use `<style lang="scss">` in any `.astro` file
+  - use sass in a stylesheet (make sure to import it to your appropriate `.astro` file)
+
+## Markdown
+- astro will process .md files in /src/content as proper Astro pages as long as you specify the layout in the frontmatter
+- so /src/content/about.md will be a page at /about
+- and /src/content/posts/2025-03-16-astro-learnings.mdx will be a page at /posts/2025-03-16-astro-learnings
+- you can also use .mdx files and use variables and components and all that good stuff
