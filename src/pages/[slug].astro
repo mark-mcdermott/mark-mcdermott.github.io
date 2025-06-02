@@ -6,18 +6,19 @@ import type { MarkdownInstance } from "astro";
 import fs from "node:fs";
 import { getPostWords, readTimeStr } from "@/utils/utils";
 import "@fontsource/montserrat/900.css";
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import rehypeStringify from 'rehype-stringify';
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+import type { MDXInstance } from "astro";
 
 const pathname = Astro.url.pathname;
 const isActive = pathname === "/";
 
 export async function getStaticPaths() {
-  const posts = (await Astro.glob(
-    "../content/posts/**/*.mdx"
-  )) as MarkdownInstance<Frontmatter>[];
+  const posts = (await Astro.glob("../content/posts/**/*.mdx")) as MDXInstance<
+    Record<string, any>
+  >[];
 
   return posts.map((post) => {
     const fileContent = fs.readFileSync(post.file, { encoding: "utf8" });
@@ -37,22 +38,22 @@ export async function getStaticPaths() {
 const { Content, frontmatter } = Astro.props.post;
 const { fileContent } = Astro.props;
 const words = getPostWords(fileContent);
-const readTime = readTimeStr(words)
+const readTime = readTimeStr(words);
 
 // Pre-process the HTML for each post’s spoiler
-const spoilerMarkdown = Astro.props.post.frontmatter.spoiler || '';
+const spoilerMarkdown = Astro.props.post.frontmatter.spoiler || "";
 const processed = await unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeStringify)
   .process(spoilerMarkdown);
-  Astro.props.post.frontmatter.spoilerHTML = String(processed);
+Astro.props.post.frontmatter.spoilerHTML = String(processed);
 ---
 
 <BlogLayout
   ><article>
     <h1
-      class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']" 
+      class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']"
       style={{
         "--myColor1": isActive ? "var(--text)" : "var(--pink)",
         "--myColor2": isActive ? "var(--text)" : "var(--purple)",
@@ -66,7 +67,11 @@ const processed = await unified()
     >
       {frontmatter.title}
     </h1>
-    <div class="mt-1 post-subtitle" style="color: var(--purple)" set:html={frontmatter.spoilerHTML}></div>
+    <div
+      class="mt-1 post-subtitle"
+      style="color: var(--purple)"
+      set:html={frontmatter.spoilerHTML}
+    />
     <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300">
       {
         new Date(frontmatter.date).toLocaleDateString("cn", {
@@ -83,14 +88,14 @@ const processed = await unified()
     <div class="markdown mt-10">
       <Content />
       <!-- @ts-expect-error: Custom attributes for Utterances script -->
-      <script is:inline
+      <script
+        is:inline
         src="https://utteranc.es/client.js"
         repo="mark-mcdermott/mark-mcdermott.github.io"
         issue-term="pathname"
         theme="github-light"
         crossorigin="anonymous"
-        async
-      ></script>
+        async></script>
     </div>
   </article></BlogLayout
 >
