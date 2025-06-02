@@ -1,7 +1,7 @@
 ---
 title: "Adding S3 to Barebones Tutorial"
-spoiler: Wherein the Tutorial Gets a Bit Cheeky
-date: 3/2/25
+spoiler: Adding S3 to the Barebones Rails/RSpec/Nuxt/Vitest/Playwright/Fly.io Tutorial
+date: '3/2/25'
 href: adding-s3-to-barebones-tutorial
 ---
 
@@ -1191,7 +1191,6 @@ ENV['POSTGRES_HOST'] ||= 'postgres'
   const isDev = process.env.NODE_ENV !== 'production'
 
   export default defineNuxtConfig({
-    app: { head: { link: [{ rel: 'stylesheet', href: 'https://npmcdn.com/comet-css@1.2.0/dist/comet.min.css' }]}},
     devServer: { port: 3001 },
 
     modules: [
@@ -1521,7 +1520,7 @@ Now we'll create our AWS S3 account so we can store our user avatar images there
 ## Part V: Setup S3 In Rails/Nuxt
 
 ### S3 Manual Avatar Upload
-- If you don’t already have the AWS CLI installed, run
+- If you don't already have the AWS CLI installed, run
 ```
 brew install awscli
 ```
@@ -1532,7 +1531,7 @@ aws configure
   - when prompted, enter these:
     - Your Access Key ID
     - Your Secret Access Key
-    - Default region name: us-east-1 (or whatever you’re using)
+    - Default region name: us-east-1 (or whatever you're using)
     - Default output format: json
 - Put a test avatar image (`avatar.png`) on your desktop
 - Run this to upload the avatar to your S3:
