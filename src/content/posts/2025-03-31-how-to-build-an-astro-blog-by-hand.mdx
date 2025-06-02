@@ -18,7 +18,7 @@ The hard-ish way to build an Astro blog is to build it by hand. This is a good w
 Steps:
 - put your .md files in `/src/content/posts`
 - create a `src/content/config.ts` like this:
-```
+```ts
 import { defineCollection, z } from 'astro:content';
 
 const posts = defineCollection({
@@ -35,7 +35,7 @@ export const collections = {
 };
 ```
 - create your posts page at `src/pages/posts/[slug].astro` like this:
-```
+```astro
 ---
 import { getCollection, getEntryBySlug } from 'astro:content';
 import Layout from '../../layouts/Layout.astro'; // or whatever your layout file is
@@ -61,7 +61,7 @@ if (!post) {
 </Layout>
 ```
 - create your index page at `src/pages/blog.astro` like this:
-```
+```astro
 ---
 import { getCollection } from 'astro:content';
 
