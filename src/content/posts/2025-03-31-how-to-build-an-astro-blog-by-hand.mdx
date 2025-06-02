@@ -1,0 +1,80 @@
+---
+title: "How to Build an Astro Blog by Hand"
+spoiler: DIY Astro fun
+date: '3/31/25'
+href: how-to-build-an-astro-blog-by-hand
+---
+
+# First the easy way
+The easy way to build an Astro blog with markdown content is to use the [Astro CLI](https://docs.astro.build/en/install-and-setup/). It will create a new Astro project for you with all the dependencies and everything you need.
+
+```bash
+yarn create astro
+```
+
+## The hard way
+The hard-ish way to build an Astro blog is to build it by hand. This is a good way to learn Astro and how it works.
+
+Steps:
+- put your .md files in `/src/content/posts`
+- create a `src/content/config.ts` like this:
+```
+import { defineCollection, z } from 'astro:content';
+
+const posts = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.date(),
+    description: z.string(),
+    // add more fields if needed
+  }),
+});
+
+export const collections = {
+  posts,
+};
+```
+- create your posts page at `src/pages/posts/[slug].astro` like this:
+```
+---
+import { getCollection, getEntryBySlug } from 'astro:content';
+import Layout from '../../layouts/Layout.astro'; // or whatever your layout file is
+
+const { slug } = Astro.params;
+const post = await getEntryBySlug('posts', slug);
+
+if (!post) {
+  throw new Error(`Post not found for slug: ${slug}`);
+}
+---
+
+<Layout title={post.data.title}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <p><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toDateString()}</time></p>
+    <p>{post.data.description}</p>
+
+    <div class="content">
+      <post.Content />
+    </div>
+  </article>
+</Layout>
+```
+- create your index page at `src/pages/blog.astro` like this:
+```
+---
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts');
+---
+
+<h1>Blog</h1>
+
+<ul>
+  {posts.map(post => (
+    <li>
+      <a href={`/posts/${post.slug}`}>{post.data.title}</a>
+    </li>
+  ))}
+</ul>
+```
