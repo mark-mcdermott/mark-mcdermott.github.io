@@ -43,7 +43,18 @@ Instructions to add Tailwind are [here](https://docs.astro.build/en/guides/styli
 - `yarn add -D sass`
 - you can now:
   - use `<style lang="scss">` in any `.astro` file
-  - use sass in a stylesheet (make sure to import it to your appropriate `.astro` file)
+  - use sass in a `.scss` stylesheet (make sure to import it to your appropriate `.astro` file)
+
+## Tailwind & Sass
+- Surprisingly, trying to get both Tailwind and Sass to work together can go South fast. But it works if you just do this:
+- `yarn astro add tailwind`
+- `yarn add -D sass`
+- create a `src/styles/custom.scss`
+- in your main layout file (e.g. `src/layouts/BaseLayout.astro`), add this to the top:
+```astro
+import "./styles/global.css";
+import "./styles/custom.scss";
+```
 
 ## Markdown
 - astro will process `.md` files in /src/content as proper Astro pages as long as you specify the layout in the frontmatter
