@@ -1,0 +1,53 @@
+---
+title: Git Rollback Roundup
+spoiler: Getting Dangerous With Git
+date: '5/12/25'
+href: git-rollback-to-x-commit
+---
+
+I was just working on this blog and realized I had to rollback to a few commits prior. I had to look it up, so thought I would document it here for posterity.
+
+## Rollback To X Commit
+
+| Type                                                    | Command                                      | Danger Level   | What Happens                                                                | History?                                     | Working Directory Afterwards                                    |
+|:--------------------------------------------------------|:---------------------------------------------|:---------------|:----------------------------------------------------------------------------|:---------------------------------------------|:----------------------------------------------------------------|
+| (Dangerous) Hard reset                                  | `git reset --hard <hash>`             | ⚠️ High        | Moves branch pointer back, deletes all commits after `<hash>`               | Commits after `<hash>` are **erased**        | Matches `<hash>` exactly (no changes staged or unstaged)        |
+| (Dangerous, but keep changes staged) Soft reset         | `git reset --soft <hash>`             | ⚠️ High        | Moves branch pointer back, keeps changes from later commits staged in index | Commits after `<hash>` are **erased**        | Later changes are staged (ready to recommit)                    |
+| (Safe) Revert commits                                   | `git revert <hash>..HEAD`             | ✅ Safe        | Creates new commit(s) that undo changes after `<hash>`                      | All commits remain in history                | Clean working directory (no unstaged changes)                   |
+| (Safe, with unstaged changes) Revert without committing | `git revert <hash>..HEAD --no-commit` | ✅ Safe        | Prepares undo changes but doesn’t commit them                               | All commits remain in history                | Later changes are unstaged (you must commit manually)           |
+
+There are three more permutations of this chart though:
+1) doing all 4 methods on just the last commit
+2) doing all 4 methods on a single commit (not the last commit though)
+3) doing all 4 methods on a range of commits (but the range ends before the last commit)
+
+# Other Rollback Scenarios
+
+## 1. Rollback of **just the last commit**
+
+| Type | Command | Danger Level | What Happens | History? | Working Directory Afterwards |
+|------|---------|--------------|--------------|----------|-----------------------------|
+| Hard reset | `git reset --hard HEAD~1` | ⚠️ High | Deletes the last commit | Last commit erased | Matches state before last commit |
+| Soft reset | `git reset --soft HEAD~1` | ⚠️ High | Removes the last commit, but keeps its changes staged | Last commit erased | Last commit’s changes staged |
+| Revert | `git revert HEAD` | ✅ Safe | Creates a new commit that undoes the last commit | Last commit stays in history | Clean (no unstaged changes) |
+| Revert without committing | `git revert HEAD --no-commit` | ✅ Safe | Prepares undo of last commit but doesn’t commit | Last commit stays in history | Last commit’s changes unstaged |
+
+
+## 2. Rollback of **a single commit that is not the last commit**
+
+| Type | Command | Danger Level | What Happens | History? | Working Directory Afterwards |
+|------|---------|--------------|--------------|----------|-----------------------------|
+| Hard reset | ❌ Not practical (would erase *all commits* after the target) | ⚠️ Very High | Would require rewriting history and deleting later commits | All commits after target erased | Matches that earlier commit |
+| Soft reset | ❌ Not practical (same issue as hard reset) | ⚠️ Very High | Erases all commits after the target, changes staged | All commits after target erased | Those later changes staged |
+| Revert | `git revert <hash>` | ✅ Safe | Creates a new commit undoing just that one commit | Commit stays in history | Clean (no unstaged changes) |
+| Revert without committing | `git revert <hash> --no-commit` | ✅ Safe | Prepares undo of just that one commit, unstaged | Commit stays in history | Undo changes are unstaged |
+
+
+## 3. Rollback of **a range of commits (ending before the last commit)**
+
+| Type | Command | Danger Level | What Happens | History? | Working Directory Afterwards |
+|------|---------|--------------|--------------|----------|-----------------------------|
+| Hard reset | ❌ Not practical (would wipe all commits after the start of the range) | ⚠️ Very High | Removes entire tail of history, including commits *after* the range | Later commits erased | Matches earlier commit before range |
+| Soft reset | ❌ Not practical (same issue) | ⚠️ Very High | Removes entire tail, changes staged | Later commits erased | Those later changes staged |
+| Revert | `git revert <hash1>^..<hash2>` | ✅ Safe | Creates new commit(s) undoing all commits in the range | Commits stay in history | Clean (no unstaged changes) |
+| Revert without committing | `git revert <hash1>^..<hash2> --no-commit` | ✅ Safe | Prepares undo of all commits in the range | Commits stay in history | Undo changes are unstaged |
