@@ -33,17 +33,16 @@ The `--install`/`--no-install` flag will install/not install the dependencies fo
 `yarn create astro --add mdx`
 `yarn create astro <name> --install --git --add tailwind --template minimal`
 
-## Tailwind
-Instructions to add Tailwind are [here](https://docs.astro.build/en/guides/styling/#add-tailwind-4)
-- `yarn astro add tailwind` (hit enter for all the questions)
-- this scaffolds `src/styles/global.css` and adds `@import "tailwindcss";` to the top.
-- make sure to import `global.css` to your appropriate `.astro` file
-
-## Sass
+## Tailwind & Sass
+- Surprisingly, trying to get both Tailwind and Sass to work together can go South fast. But it works if you just do this:
+- `yarn astro add tailwind`
 - `yarn add -D sass`
-- you can now:
-  - use `<style lang="scss">` in any `.astro` file
-  - use sass in a stylesheet (make sure to import it to your appropriate `.astro` file)
+- create a `src/styles/custom.scss`
+- in your main layout file (e.g. `src/layouts/BaseLayout.astro`), add this to the top:
+```astro
+import "./styles/global.css";
+import "./styles/custom.scss";
+```
 
 ## Markdown
 - astro will process `.md` files in /src/content as proper Astro pages as long as you specify the layout in the frontmatter

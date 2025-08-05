@@ -1,0 +1,23 @@
+---
+title: Keep VSCode from Tweaking Code
+spoiler: Using .vscode/settings.json
+date: '4/16/25'
+href: prevent-vscode-from-reformatting-on-save
+---
+
+One thing that's been bothering me lately is that VSCode sometimes reformats my code when I save a file. I love ESLint and Prettier, but sometimes I want more than one object per line, like with QMK files defining keyboard layouts.
+
+What seems to be working lately is creating a `.vscode/settings.json` file in the root of the repo I'm working on and adding this to the `settings.json`:
+
+```json
+{
+    "[json]": {
+        "editor.formatOnSave": false
+    },
+    "[jsonc]": {
+        "editor.formatOnSave": false
+    }
+}
+```
+
+`jsonc` is for JSON with comments. It's confusing though because sometimes you'll be working on a `.json` file, but the `[json]` settings won't apply to it. In that case, VSCode is probably treating the file as `jsonc`. VSCode autodetects some "special" `json` files (listed below) and treats them as `jsonc`. When VSCode is treating a `.json` fie as `.jsonc`, it will say "JSON with Comments" in the bottom right of VSCode in the "Language Mode Indicator" section.
