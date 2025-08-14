@@ -1,8 +1,8 @@
 ---
 title: Where's Your Head At?
-spoiler: Understanding Git Changes
+spoiler: Number of Commits Ahead/Behind
 date: '5/21/25'
-href: wheres-your-head-at-understanding-git-changes
+href: wheres-your-head-at-number-of-commits-ahead-behind
 ---
 
 Another day, another realization that I still have a lot to learn in Git. Today's medium-dive: understanding how changes on a development branch compare to main.
@@ -28,7 +28,7 @@ git rev-list --left-right --count master...HEAD
 - `git log --oneline --graph --decorate master..HEAD`    # commits ahead
 - `git log --oneline --graph --decorate HEAD..master`    # commits behind
 
-### Number of Commits Ahead/Behing Local Master in Plain English
+### Number of Commits Ahead/Behind Local Master in Plain English
 ```
 git rev-list --left-right --count master...HEAD | awk '{print "Behind by "$1" commits, ahead by "$2" commits."}'
 ```
@@ -62,3 +62,14 @@ git checkout master
 git fetch origin
 git pull --ff-only   # or: git reset --hard origin/master
 ```
+
+### Above Commands Using Main
+And for easy copy/pasting if you use `main` instead of `master`:
+- `git rev-list --left-right --count main...HEAD`      # number behind/head (local)
+- `git log --oneline --graph --decorate main..HEAD`    # commits ahead (local)
+- `git log --oneline --graph --decorate HEAD..main`    # commits behind (local)
+- `git rev-list --left-right --count main...HEAD | awk '{print "Behind by "$1" commits, ahead by "$2" commits."}'` (local)
+- `git rev-list --left-right --count origin/main...HEAD`      # number behind/head (remote)
+- `git log --oneline --graph --decorate origin/main..HEAD`    # commits ahead (remote)
+- `git log --oneline --graph --decorate HEAD..origin/main`    # commits behind (remote)
+- `git rev-list --left-right --count origin/main...HEAD | awk '{print "Behind by "$1" commits, ahead by "$2" commits."}'` (remote)
