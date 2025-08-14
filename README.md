@@ -1,7 +1,7 @@
 This is the github repo for my blog site: [https://markmcdermott.io](https://markmcdermott.io)
 
-
-The "stack" is [Astro](https://astro.build), [Tailwind](https://tailwindcss.com/) and [Github Pages](https://pages.github.com/). The little avatar image links to [my Github User Site](https://github.com/mark-mcdermott/mark-mcdermott) which is a sort of a de facto "About Me" page for the blog. I write/edit posts right in this github repo in markdown.
+#### Stack attack
+This uses the GAT stack: [Github Pages](https://pages.github.com/), [Astro](https://astro.build) and [Tailwind](https://tailwindcss.com/). The little avatar image links to [my Github User Site](https://github.com/mark-mcdermott/mark-mcdermott) which is a sort of a de facto "About Me" page for the blog. I write/edit posts right in this github repo in markdown.
 
 #### Why Astro?
 Fast load time: My old Nuxt blog was having some slow load time issues on mobile. Astro’s static site generation makes this blog load very quickly. Google Lighthouse says it loads in 0.2s on desktop and 1.1s on mobile and a 100% score for performance. It’s possible I can get this even lower, but for now that is great.
