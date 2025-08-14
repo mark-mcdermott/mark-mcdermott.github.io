@@ -1,0 +1,40 @@
+---
+title: Viewing Git Changes
+spoiler: Both Filenames & Diffs
+date: '6/15/25'
+href: viewing-git-changes-both-filenames-and-diffs
+---
+
+This blog has answers for the following scenario. I'm on a local dev branch and have committed my changes. I want to see:
+- filenames that have changes from master (local)
+- diffs of all files that have changes from master (local)
+- filenames that have changes from origin/master (remote)
+- diffs of all files that have changes from origin/master (remote)
+
+## Filenames With Changes (local)
+```
+git diff --name-only master
+```
+
+## Diffs of Files With Changes (local)
+```
+git diff master
+```
+
+## Filenames With Changes (remote)
+```
+git fetch origin master
+git diff --name-only origin/master
+```
+
+## Diffs of Files With Changes (remote)
+```
+git fetch origin master
+git diff origin/master
+```
+
+## Bonus: Compact Change Summary
+```
+git diff --stat master         # local  
+git diff --stat origin/master  # remote (git fetch origin master first)
+```
