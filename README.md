@@ -23,3 +23,6 @@ Quick post creation: Astro supports markdown files, so I can write my posts in m
 
 #### Why Tailwind?
 Quick CSS changes: CSS changes are so fast with Tailwind, I barely have to think about CSS, unlike Bootstrap, etc.  I still think Tailwind makes the html look ugly. but it's worth it.
+
+#### Changes 8/20/25
+I was running a build/deploy GitHub Action, but just removed it. It's easy to run locally and I don't have to watch online for whether the GitHub Action passed or failed. This is part of a refactor trying to switch the CMS from VSCode/GitHub, to Obsidian, which I always have open anyway.
