@@ -1,0 +1,943 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.2"><title>Mark McDermott</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DZnDNxNb.js"></script><link rel="stylesheet" href="/_astro/_slug_.B_QYcVCA.css">
+<style>footer[data-astro-cid-olvf4l2g]{display:flex;flex-flow:column wrap;align-content:flex-end}.markdown{line-height:28px;--path: none;--radius-top: 12px;--radius-bottom: 12px;--padding-top: 1rem;--padding-bottom: 1rem}.markdown p{padding-bottom:2rem}.markdown a{border-bottom-width:1px;border-color:var(--link);color:var(--link)}.markdown hr{padding-top:2rem;opacity:.6}@media (prefers-color-scheme: dark){.markdown hr{opacity:.1}}.markdown h1{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:2.25rem;line-height:2.5rem;font-weight:700}.markdown h2{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:1.875rem;line-height:2.25rem;font-weight:700}.markdown h3{margin-top:.5rem;padding-bottom:2rem;font-size:1.5rem;line-height:2rem;font-weight:700}.markdown h4{margin-top:.5rem;padding-bottom:2rem;font-size:1.25rem;line-height:1.75rem;font-weight:700}.markdown :not(pre)>code{background:var(--inlineCode-bg);color:var(--inlineCode-text);padding:.15em .2em .05em;white-space:normal}.markdown pre{margin-left:-1rem;margin-right:-1rem;margin-bottom:2rem;overflow-y:auto;padding:1rem;font-size:.875rem;line-height:1.25rem;clip-path:var(--path);border-top-right-radius:var(--radius-top);border-top-left-radius:var(--radius-top);border-bottom-right-radius:var(--radius-bottom);border-bottom-left-radius:var(--radius-bottom);padding-top:var(--padding-top);padding-bottom:var(--padding-bottom)}.markdown pre code{width:auto}.markdown blockquote{position:relative;left:-.5rem;margin-left:-1rem;margin-bottom:2rem;padding-left:1rem;font-style:italic;border-left:3px solid hsla(0,0%,0%,.9);border-left-color:inherit;opacity:.8}.markdown blockquote p{margin:0;padding:0}.markdown p img{margin-bottom:0}.markdown ul{margin-top:0;padding:0;margin-bottom:1.75rem;list-style-position:outside;list-style-image:none;list-style:disc}.markdown li{margin-bottom:.875rem}.markdown img{margin-bottom:2rem;max-width:100%}.markdown pre [data-highlighted-line]{margin-left:-16px;padding-left:12px;border-left:4px solid #ffa7c4;background-color:#022a4b;display:block;padding-right:1em}
+</style>
+<link rel="stylesheet" href="/_astro/index.CX5Zbgb8.css"></head> <body class="mx-auto max-w-7xl bg-[--bg] px-5 py-12 text-[--text]">   <header class="mb-14 flex flex-row place-content-between"> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span>markmcdermott.io (js,&nbsp;ruby,&nbsp;...etc)</span> </a> <span class="min-w-20 relative top-[4px] italic">
+by
+<a class="scale-100 active:scale-100" target="_blank" href="https://github.com/mark-mcdermott"><img src="https://avatars.githubusercontent.com/u/9694783?v=5" alt="mark mcdermott" title="mark mcdermott" loading="lazy" decoding="async" fetchpriority="auto" width="32" height="32" class="relative -top-1 mx-2 inline h-8 w-8 rounded-full"> </a> </span> </header>  <article> <h1 class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']" style="--myColor1:var(--pink);--myColor2:var(--purple);background-image:linear-gradient(45deg, var(--myColor1), var(--myColor2));background-clip:text;-webkit-background-clip:text;color:transparent;transition:--myColor1 0.2s ease-out, --myColor2 0.2s ease-in-out"> Barebones Rails/RSpec/Nuxt/Vitest/Playwright/Fly.io Tutorial </h1> <div class="mt-1 post-subtitle" style="color: var(--purple)"><p>A tutorial for setting up a Rails/RSpec/Nuxt/Vitest/Playwright/Fly.io app</p></div> <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300"> 01/29/2025 </p> <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
+read time：17 mins </p> <div class="markdown mt-10"> <p>Here we’ll make a MVP (“minimum viable product”) of a rails API-only backend with rspec tests that talks to a nuxt frontend with vitest component tests and playwright end-to-end tests. This will have close to no functionality and no styling, but everything will be wired together correctly and all three test suites will pass when run locally or on CircleCI.</p>
+<p>This tutorial is available in markdown on <a href="https://github.com/mark-mcdermott/rails-nuxt-flyio-circleci-mvp-app">github</a>.</p>
+<h1 id="local-preliminary-app-setup">Local Preliminary App Setup</h1>
+<ol>
+<li>Create app directory:
+<ul>
+<li><code>mkdir app</code></li>
+<li><code>cd app</code></li>
+</ul>
+</li>
+<li>Initialize git repo:
+<ul>
+<li><code>git init</code> (hit enter for all prompts)</li>
+</ul>
+</li>
+<li>Let’s create some blank files for app secrets (like the PostgreSQL connection details) and for non-secret app info.
+<ul>
+<li><code>touch .gitignore .secrets .appinfo</code></li>
+</ul>
+</li>
+<li>Let’s add <code>.secrets</code> and <code>.appinfo</code> to our <code>.gitignore</code>:
+<ul>
+<li><code>.gitignore</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>.secrets</span></span>
+<span class="line"><span>.appinfo</span></span></code></pre>
+</li>
+<li>Choose what your unique front and backend app names will be. If someone else on Fly.io already has an app with the same name, they will ask you to choose a new name. So the more unique, the better. Something like <code>myuniqueapp001-backend</code> and <code>myuniqueapp001-frontend</code> should do the trick.</li>
+<li>In <code>.appinfo</code> add <em>(replacing the <code>&lt;...&gt;</code> parts with the names you chose above)</em>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>backend app name: &lt;your backend app name&gt;</span></span>
+<span class="line"><span>frontend app name: &lt;your frontend app name&gt;</span></span>
+<span class="line"><span>backend app url: https://&lt;your backend app name&gt;.fly.dev</span></span>
+<span class="line"><span>frontend app url: https://&lt;your frontend app name&gt;.fly.dev</span></span></code></pre>
+</li>
+</ol>
+<h2 id="local-frontend-setup-nuxt">Local Frontend Setup (Nuxt)</h2>
+<ol>
+<li>Set up a Nuxt 3 project (from the app’s main folder):
+<ul>
+<li><code>npx nuxi@latest init frontend</code>
+<ul>
+<li>choose <code>npm</code> for package manager</li>
+<li>choose <code>no</code> for initialize git repository</li>
+</ul>
+</li>
+<li><code>cd frontend</code></li>
+</ul>
+</li>
+<li>Create a simple component and use it in <code>app.vue</code>:
+<ul>
+<li><code>mkdir components</code></li>
+<li><code>touch components/Hello.vue</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;!--- frontend/components/Hello.vue --&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;p data-testid=&quot;frontend-message&quot;&gt;Hello from Nuxt!&lt;/p&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span></code></pre>
+<ul>
+<li><code>app.vue</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;!--- frontend/app.vue --&gt;</span></span>
+<span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;Hello /&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span></code></pre>
+</li>
+<li>Run the Nuxt app locally:
+<ul>
+<li><code>npm run dev</code> (at <code>http://localhost:3000</code> you should see “Hello from Nuxt!”)</li>
+</ul>
+</li>
+<li>Stop the server by pressing <code>command + c</code>.</li>
+</ol>
+<h3 id="vitest-local">Vitest (Local)</h3>
+<p>We’ll setup Vitest here for component tests.</p>
+<ol>
+<li>Install Vitest and testing dependencies:
+<ul>
+<li><code>npm i --save-dev @nuxt/test-utils vitest @vue/test-utils happy-dom playwright-core</code></li>
+</ul>
+</li>
+<li>Change your <code>nuxt.config.ts</code> to this:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/nuxt.config.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineNuxtConfig({</span></span>
+<span class="line"><span>  modules: [&#39;@nuxt/test-utils/module&#39;]</span></span>
+<span class="line"><span>})</span></span></code></pre>
+</li>
+<li>Create a <code>vitest.config.ts</code>:
+<ul>
+<li><code>touch vitest.config.ts</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/vitest.config.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import { defineVitestConfig } from &#39;@nuxt/test-utils/config&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineVitestConfig({ })</span></span></code></pre>
+</li>
+<li>Let’s create our test directory and test file:
+<ul>
+<li><code>mkdir -p spec/components</code></li>
+<li><code>touch spec/components/hello.nuxt.spec.ts</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/spec/components/hello.nuxt.spec.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import { it, expect } from &#39;vitest&#39;</span></span>
+<span class="line"><span>import { mountSuspended } from &#39;@nuxt/test-utils/runtime&#39;</span></span>
+<span class="line"><span>import { Hello } from &#39;#components&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>it(&#39;can mount some component&#39;, async () =&gt; {</span></span>
+<span class="line"><span>    const component = await mountSuspended(Hello)</span></span>
+<span class="line"><span>    expect(component.text()).toMatchInlineSnapshot(</span></span>
+<span class="line"><span>        &#39;&quot;Hello from Nuxt!&quot;&#39;</span></span>
+<span class="line"><span>    )</span></span>
+<span class="line"><span>})</span></span></code></pre>
+</li>
+<li>Run Vitest:
+<ul>
+<li><code>npx vitest spec/components</code> (1 test should pass)</li>
+<li><code>cd ..</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="vitest-docker">Vitest Docker</h2>
+<ol>
+<li>From the root directory of our app, let’s create a <code>docker-compse.yml</code> file:
+<ul>
+<li><code>touch docker-compose.yml</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># docker-compose.yml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>services:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    image: cimg/node:18.18</span></span>
+<span class="line"><span>    working_dir: /app/frontend</span></span>
+<span class="line"><span>    command: bash -c &quot;npm ci &amp;&amp; npx nuxi prepare &amp;&amp; npx vitest spec/components&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span></code></pre>
+</li>
+<li>Let’s run Vitest on our local Docker setup:</li>
+</ol>
+<ul>
+<li><code>docker-compose run --rm vitest</code></li>
+</ul>
+<h2 id="vitest-circleci">Vitest CircleCI</h2>
+<p>Now from the root directory of our app, let’s setup Vitest for CircleCI.</p>
+<ol>
+<li>Let’s create a <code>.circleci/config.yml</code>, the config file for CircleCI:
+<ul>
+<li><code>mkdir .circleci</code></li>
+<li><code>touch .circleci/config.yml</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>jobs:</span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/node:18.18</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install dependencies</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npm ci</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Generate Nuxt files</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx nuxi prepare</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Vitest</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx vitest spec/components</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>workflows:</span></span>
+<span class="line"><span>  version: 2</span></span>
+<span class="line"><span>  test_workflow:</span></span>
+<span class="line"><span>    jobs:</span></span>
+<span class="line"><span>      - vitest</span></span></code></pre>
+</li>
+<li>You’ll need to deploy the whole app to github.
+<ul>
+<li><code>git add .</code></li>
+<li><code>git commit -m &quot;Add Vitest&quot;</code></li>
+<li>Create a new public repo in the github UI</li>
+<li><code>git branch -M main</code></li>
+<li>From the github UI, get the repo’s “web url” (the url that ends in <code>.git</code>, like <code>https://github.com/mark-mcdermott/testingtestinghaaay.git</code>)</li>
+<li><code>git remote add origin &lt;repo web url&gt;</code></li>
+<li><code>git push -u origin main</code></li>
+</ul>
+</li>
+<li>Configure CircleCI for the new repo
+<ul>
+<li>Login to CircleCI</li>
+<li>Click the “Go to application” button</li>
+<li>Click “Projects” in the left sidebar</li>
+<li>Find your new repo in the Project list</li>
+<li>In your repo’s project row, click “Set up Project” towards the right.</li>
+<li>The “Select your config.yml file” modal shows and “Fastest” is already the selected radio option</li>
+<li>In the “From which branch” field under “Fastest”, type <code>main</code></li>
+<li>Click the “Set up Project” button on the modal.</li>
+<li>This will take you to your new repo’s “Pipeline” and a run will have started</li>
+<li>You can watch the run and when it’s finished, the Vitest step should have passed and everything should be green.</li>
+</ul>
+</li>
+</ol>
+<h2 id="tweak-frontend-to-talk-to-backend">Tweak Frontend To Talk To Backend</h2>
+<ol>
+<li>Let’s configure our <code>nuxt.config.ts</code> to talk to the backend:
+<ul>
+<li><code>cd frontend</code></li>
+<li><code>frontend/nuxt.config.ts</code> <em>(make sure to replace <code>&lt;...&gt;</code> with your app backend name)</em></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/nuxt.config.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineNuxtConfig({</span></span>
+<span class="line"><span>  server: { port: 3001, host: &#39;0.0.0.0&#39; },</span></span>
+<span class="line"><span>  runtimeConfig: { public: { apiURL: &#39;http://localhost:3000/api/v1&#39;}},</span></span>
+<span class="line"><span>  $production: { runtimeConfig: { public: { apiURL: &#39;https://&lt;app backend name&gt;.fly.dev/api/v1&#39; }}},</span></span>
+<span class="line"><span>  modules: [&#39;@nuxt/test-utils/module&#39;]</span></span>
+<span class="line"><span>})</span></span></code></pre>
+</li>
+<li>Let’s make our component talk to the backend as well:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;!--- frontend/components/Hello.vue --&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;p data-testid=&quot;backend-message&quot;&gt;{{ message }}&lt;/p&gt;</span></span>
+<span class="line"><span>  &lt;p data-testid=&quot;frontend-message&quot;&gt;Hello from Nuxt!&lt;/p&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;script setup&gt;</span></span>
+<span class="line"><span>import { ref, onMounted } from &#39;vue&#39;;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const runtimeConfig = useRuntimeConfig()</span></span>
+<span class="line"><span>const message = ref(&#39;&#39;);</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>onMounted(async () =&gt; {</span></span>
+<span class="line"><span>  const response = await fetch(`${runtimeConfig.public.apiURL}/hello`);</span></span>
+<span class="line"><span>  const data = await response.json();</span></span>
+<span class="line"><span>  message.value = data.message;</span></span>
+<span class="line"><span>});</span></span>
+<span class="line"><span>&lt;/script&gt;</span></span></code></pre>
+</li>
+<li>Let’s update our component test to match the new html:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/spec/components/hello.nuxt.spec.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import { it, expect, vi } from &#39;vitest&#39;</span></span>
+<span class="line"><span>import { mountSuspended } from &#39;@nuxt/test-utils/runtime&#39;</span></span>
+<span class="line"><span>import { Hello } from &#39;#components&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>global.fetch = vi.fn(() =&gt;</span></span>
+<span class="line"><span>    Promise.resolve({</span></span>
+<span class="line"><span>        json: () =&gt; Promise.resolve({ message: &#39;Hello from Rails!&#39; }),</span></span>
+<span class="line"><span>    })</span></span>
+<span class="line"><span>)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>it(&#39;can mount some component&#39;, async () =&gt; {</span></span>
+<span class="line"><span>    const component = await mountSuspended(Hello)</span></span>
+<span class="line"><span>    expect(component.html()).toMatchInlineSnapshot(`</span></span>
+<span class="line"><span>        &quot;&lt;p data-testid=&quot;backend-message&quot;&gt;Hello from Rails!&lt;/p&gt;</span></span>
+<span class="line"><span>        &lt;p data-testid=&quot;frontend-message&quot;&gt;Hello from Nuxt!&lt;/p&gt;&quot;</span></span>
+<span class="line"><span>      `)</span></span>
+<span class="line"><span>})</span></span></code></pre>
+</li>
+<li>Before we setup the backend, let’s double check Vitest is still passing locally, on local Docker and on CircleCI.
+<ul>
+<li>locally:
+<ul>
+<li><code>npx vitest spec/components</code> (1 test should pass)</li>
+</ul>
+</li>
+<li>local docker:
+<ul>
+<li><code>cd ..</code></li>
+<li><code>docker-compose build</code></li>
+<li><code>docker-compose up</code>  (1 test should pass)</li>
+</ul>
+</li>
+<li>CircleCI:
+<ul>
+<li><code>git add .</code></li>
+<li><code>git commit -m &quot;Setup frontend to talk to backend&quot;</code></li>
+<li><code>git push</code></li>
+<li>Check the CircleCI build (vitest section should be green and passing)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="local-backend-setup-rails">Local Backend Setup (Rails)</h2>
+<ol>
+<li>Set up Rails API-only backend with RSpec:
+<ul>
+<li><code>rails new backend --api -T -d postgresql</code></li>
+<li><code>cd backend</code></li>
+<li><code>rm -rf .git</code></li>
+<li><code>bundle add rack-cors</code></li>
+</ul>
+</li>
+<li>in <code>backend/Gemfile</code> change line 3 (the ruby version line) to <code>ruby &quot;~&gt; 3.3&quot;</code></li>
+<li>Create a simple controller:
+<ul>
+<li><code>mkdir -p app/controllers/api/v1</code></li>
+<li><code>touch app/controllers/api/v1/hello_controller.rb</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/controllers/api/v1/hello_controller.rb</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>module Api</span></span>
+<span class="line"><span>  module V1</span></span>
+<span class="line"><span>    class HelloController &lt; ApplicationController</span></span>
+<span class="line"><span>      def index</span></span>
+<span class="line"><span>        render json: { message: &#39;Hello from Rails!&#39; }</span></span>
+<span class="line"><span>      end</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Set the routes:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/config/routes.rb</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Rails.application.routes.draw do</span></span>
+<span class="line"><span>  namespace :api do</span></span>
+<span class="line"><span>    namespace :v1 do</span></span>
+<span class="line"><span>      get &#39;hello&#39;, to: &#39;hello#index&#39;</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Set our CORS configuration the backend doesn’t block calls from the frontend:
+<code>config/initializers/cors.rb</code> <em>(make sure to replace <code>&lt;...&gt;</code> with your app frontend name)</em>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/config/initializers/cors.rb</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Rails.application.config.middleware.insert_before 0, Rack::Cors do</span></span>
+<span class="line"><span>  allow do</span></span>
+<span class="line"><span>    origins &quot;http://localhost:3001&quot;, &quot;https://&lt;app frontend name&gt;.fly.dev&quot;</span></span>
+<span class="line"><span>    resource &quot;*&quot;,</span></span>
+<span class="line"><span>      headers: :any,</span></span>
+<span class="line"><span>      methods: [:get, :post, :put, :patch, :delete, :options, :head]</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Database setup:
+<ul>
+<li>Start postgreSQL on your computer (I use the desktop PostgreSQL app) and run it in the background</li>
+<li>run the database setup:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails db:create db:migrate</span></span></code></pre>
+<ul>
+<li>or if have a databases called <code>backend_development</code> and <code>backend_test</code> (like if you’ve already run through this tutorial before):</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails db:drop db:create db:migrate</span></span></code></pre>
+</li>
+<li>Change directory to the app’s root directory:
+<ul>
+<li><code>cd ..</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="run-app-locally">Run App Locally</h2>
+<ol>
+<li>Run the backend server in terminal 1:
+<ul>
+<li><code>cd backend</code></li>
+<li><code>rails server</code></li>
+</ul>
+</li>
+<li>Run the Nuxt app in terminal 2:
+<ul>
+<li><code>cd frontend</code></li>
+<li><code>npm run dev</code> (at <code>http://localhost:3001</code> you should see “Hello from Rails!” and “Hello from Nuxt!”)
+<ul>
+<li>If you only see “Hello from Nuxt!” and not “Hello from Rails!”, don’t panic. In my experience, sometimes the backend starts up properly right away and other times it can take about 5 minutes.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Stop the frontend and the backend servers by pressing <code>command + c</code> in their respective terminals.</li>
+</ol>
+<h2 id="deploy-to-prod-flyio">Deploy To Prod (Fly.io)</h2>
+<ul>
+<li>Here we’ll deploy our backend and frontend apps to Fly.io.</li>
+<li>In Fly.io, these will be two totally separate apps. We’ll have them setup to talk to each other, but they’ll be two separate apps listed in your Fly.io apps section.</li>
+<li>When you deploy the backend, there will also be a third app automatically created—your backend PostgreSQL database. This is what we want.</li>
+</ul>
+<ol>
+<li>Install Fly CLI and log in:</li>
+</ol>
+<ul>
+<li><code>brew install flyctl</code> (only if <code>flyctl</code> is not installed yet)</li>
+<li><code>fly auth login</code></li>
+</ul>
+<h3 id="deploy-frontend">Deploy Frontend</h3>
+<ol>
+<li>In your <code>frontend/package.json</code> in the <code>scripts</code> section, add this line: <code>&quot;start&quot;: &quot;nuxt start&quot;,</code></li>
+<li>Let’s add our Fly.io configuration file, mostly, so it won’t ask us what the app name and region are when we <code>fly launch</code>—it’s a little faster this way. <em>Make sure to replace <code>&lt;...&gt;</code> with your app frontend name.</em> Also replace <code>dfw</code> in the <code>primary_region</code> with <a href="https://fly.io/docs/reference/regions/">your region code</a>.
+<ul>
+<li><code>touch fly.toml</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># frontend/fly.toml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>app = &#39;&lt;app frontend name&gt;&#39;</span></span>
+<span class="line"><span>primary_region = &#39;dfw&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[build]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[http_service]</span></span>
+<span class="line"><span>  internal_port = 3001</span></span>
+<span class="line"><span>  force_https = true</span></span>
+<span class="line"><span>  auto_stop_machines = &#39;stop&#39;</span></span>
+<span class="line"><span>  auto_start_machines = true</span></span>
+<span class="line"><span>  min_machines_running = 0</span></span>
+<span class="line"><span>  processes = [&#39;app&#39;]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[[vm]]</span></span>
+<span class="line"><span>  memory = &#39;1gb&#39;</span></span>
+<span class="line"><span>  cpu_kind = &#39;shared&#39;</span></span>
+<span class="line"><span>  cpus = 1</span></span></code></pre>
+</li>
+<li><code>fly launch</code>
+<ul>
+<li>When it asks, “A fly.toml file was found. Would you like to copy its configuration to the new app?”, press <code>y</code></li>
+<li>When it asks, “Do you want to tweak these settings before proceeding?”, press <code>N</code> or enter</li>
+<li>When <code>fly launch</code> if finished, look at the output for “Visit your newly deployed app at <code>&lt;url&gt;</code>” and copy/paste the url into the “frontend app url” line of your <code>.appinfo</code></li>
+</ul>
+</li>
+<li>Go to your frontend app url in a browser.
+<ul>
+<li>You should see “Hello from Nuxt!”, but not “Hello from Rails!”</li>
+<li>In the console, there will be a failed request to the backend (becuase they backend’s not deployed yet)</li>
+</ul>
+</li>
+<li><code>cd ..</code> into the app’s root directory</li>
+</ol>
+<h3 id="deploy-backend">Deploy Backend</h3>
+<ol>
+<li><code>cd backend</code></li>
+<li>We’ll start by deleting the Docker files that Rails creates with <code>rails new</code>:
+<ul>
+<li><code>rm Dockerfile</code></li>
+<li><code>rm .dockerignore</code></li>
+</ul>
+</li>
+<li>Let’s create our backend <code>fly.toml</code> file, our Fly.io configuration file for our backend, mostly, so it won’t ask us what the app name and region are when we <code>fly launch</code>—it’s a little faster this way. <em>Make sure to replace <code>&lt;...&gt;</code> with your app backend name.</em> Also replace <code>dfw</code> in the <code>primary_region</code> with <a href="https://fly.io/docs/reference/regions/">your region code</a>.
+<ul>
+<li><code>touch fly.toml</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/fly.toml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>app = &#39;&lt;app backend&gt;&#39;</span></span>
+<span class="line"><span>primary_region = &#39;dfw&#39;</span></span>
+<span class="line"><span>console_command = &#39;/rails/bin/rails console&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[build]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[deploy]</span></span>
+<span class="line"><span>  release_command = &#39;./bin/rails db:prepare&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[http_service]</span></span>
+<span class="line"><span>  internal_port = 3000</span></span>
+<span class="line"><span>  force_https = true</span></span>
+<span class="line"><span>  auto_stop_machines = &#39;stop&#39;</span></span>
+<span class="line"><span>  auto_start_machines = true</span></span>
+<span class="line"><span>  min_machines_running = 0</span></span>
+<span class="line"><span>  processes = [&#39;app&#39;]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[[vm]]</span></span>
+<span class="line"><span>  memory = &#39;1gb&#39;</span></span>
+<span class="line"><span>  cpu_kind = &#39;shared&#39;</span></span>
+<span class="line"><span>  cpus = 1</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>[[statics]]</span></span>
+<span class="line"><span>  guest_path = &#39;/rails/public&#39;</span></span>
+<span class="line"><span>  url_prefix = &#39;/&#39;</span></span></code></pre>
+</li>
+<li>Deploy the backend:</li>
+</ol>
+<ul>
+<li><code>fly launch</code>
+<ul>
+<li>It’ll ask you some questions:
+<ul>
+<li>“An existing fly.toml file was found. Would you like to copy its configuration to the new app?” Answer <code>y</code></li>
+<li>“Do you want to tweak these settings before proceeding?” Answer <code>N</code> or hit enter</li>
+<li>After this, the deployment starts. It can take a few minutes to finish and a lot of output will scroll down your screen like the Matrix. Watch this output—some of it’s important.</li>
+<li>Watch the output and look for the “Postgres cluster details”, which end with the line, “Save your credentials in a secure place — you won’t be able to see them again!” When you see it, copy and paste this section to your <code>.secrets</code> file.</li>
+<li>When it asks, “Overwrite entrypoint?”, press ‘n’</li>
+<li>When it asks, “Overwrite fly.toml?”, press ‘n’</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>Go to your <strong>frontend</strong> app url in a browser.
+<ul>
+<li>You should see “Hello from Nuxt!” <em>and</em> “Hello from Rails!”</li>
+<li>In the console, there should be no 404 errors</li>
+</ul>
+</li>
+<li><code>cd ..</code> into the app’s root directory</li>
+</ol>
+<h2 id="playwright-local">Playwright (Local)</h2>
+<ol>
+<li>First we’ll install Playwright:
+<ul>
+<li><code>cd frontend</code></li>
+<li><code>npm install -D @playwright/test</code></li>
+<li><code>npx playwright install</code></li>
+</ul>
+</li>
+<li>Then we’ll configure Playwright:
+<ul>
+<li><code>touch playwright.config.ts</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/playwright.config.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import { defineConfig } from &#39;@playwright/test&#39;;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineConfig({</span></span>
+<span class="line"><span>  testDir: &#39;./spec/e2e&#39;,</span></span>
+<span class="line"><span>  use: {</span></span>
+<span class="line"><span>    baseURL: &#39;http://localhost:3001&#39;,</span></span>
+<span class="line"><span>    browserName: &#39;chromium&#39;,</span></span>
+<span class="line"><span>    headless: true, // Change to `false` to see the browser in action</span></span>
+<span class="line"><span>  },</span></span>
+<span class="line"><span>  webServer: {</span></span>
+<span class="line"><span>    command: &#39;npm run dev&#39;,</span></span>
+<span class="line"><span>    port: 3001,</span></span>
+<span class="line"><span>    reuseExistingServer: true,</span></span>
+<span class="line"><span>  },</span></span>
+<span class="line"><span>});</span></span></code></pre>
+</li>
+<li>Now we’ll create our Playwright test:
+<ul>
+<li><code>mkdir spec/e2e</code></li>
+<li><code>touch spec/e2e/hello.spec.ts</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>// frontend/e2e/hello.spec.ts</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>import { test, expect } from &#39;@playwright/test&#39;;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>test(&#39;frontend and backend are working&#39;, async ({ page }) =&gt; {</span></span>
+<span class="line"><span>  await page.goto(&#39;/&#39;);</span></span>
+<span class="line"><span>  await expect(page.locator(&#39;[data-testid=&quot;frontend-message&quot;]&#39;)).toHaveText(&#39;Hello from Nuxt!&#39;);</span></span>
+<span class="line"><span>  await expect(page.locator(&#39;[data-testid=&quot;backend-message&quot;]&#39;)).toHaveText(&#39;Hello from Rails!&#39;);</span></span>
+<span class="line"><span>});</span></span></code></pre>
+</li>
+<li>Now run Playwright locally:
+<ul>
+<li>In a terminal pane in the backend directory, run <code>rails server</code></li>
+<li>In a terminal pane in the frontend directory, run <code>npm run dev</code></li>
+<li>In another terminal pane in the frontend directory, run <code>npx playwright test spec/e2e</code> (1 test should pass)</li>
+<li>Stop the first two terminal panes with control + c.</li>
+</ul>
+</li>
+</ol>
+<h2 id="playwright-docker">Playwright Docker</h2>
+<p>I was unable to get playwright working on docker on my computer. I ran into issues with ARM64 incompatability with the appropriate Docker images and wasn’t able to figure out a way around them. <strong>So just skip this part</strong>.</p>
+<p>But if you’re feeling intrepid, chaning the <code>docker-compose.yml</code> to something like this might get you partway there:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># docker-compose.yml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>services:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  playwright:</span></span>
+<span class="line"><span>    image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>    working_dir: /app/frontend</span></span>
+<span class="line"><span>    command: |</span></span>
+<span class="line"><span>      apt-get update &amp;&amp; apt-get install -y \</span></span>
+<span class="line"><span>      libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \</span></span>
+<span class="line"><span>      libxcomposite1 libxdamage1 libgbm1 libpango-1.0-0 libxrandr2 \</span></span>
+<span class="line"><span>      libcups2 libdrm2 libxshmfence1 libasound2 &amp;&amp; \</span></span>
+<span class="line"><span>      npm ci &amp;&amp; npx playwright install &amp;&amp; npx playwright test spec/e2e</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      - nuxt</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  db:</span></span>
+<span class="line"><span>    image: postgres:13</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      POSTGRES_USER: postgres</span></span>
+<span class="line"><span>      POSTGRES_PASSWORD: postgres</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;5432:5432&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rails:</span></span>
+<span class="line"><span>    image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>    working_dir: /app/backend</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      RAILS_ENV: test</span></span>
+<span class="line"><span>    command: bundle install &amp;&amp; rails server -e test -p 3000</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;3000:3000&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      - db</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  nuxt:</span></span>
+<span class="line"><span>    image: cimg/node:18.18</span></span>
+<span class="line"><span>    working_dir: /app/frontend</span></span>
+<span class="line"><span>    command: npm ci &amp;&amp; npx nuxi dev -p 3001</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;3001:3001&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      - rails</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    image: cimg/node:18.18</span></span>
+<span class="line"><span>    working_dir: /app/frontend</span></span>
+<span class="line"><span>    command: bash -c &quot;npm ci &amp;&amp; npx nuxi prepare &amp;&amp; npx vitest spec/components&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>          - .:/app</span></span></code></pre>
+<h2 id="playwright-on-circleci">Playwright On CircleCI</h2>
+<ol>
+<li>From the root directory of our app, let’s change our <code>.circleci/config.yml</code> to include a Playwright section:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># .circleci/config.yml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>jobs:</span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/node:18.18</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install dependencies</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npm ci</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Generate Nuxt files</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx nuxi prepare</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Vitest</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx vitest spec/components</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  playwright:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>        environment:</span></span>
+<span class="line"><span>          RAILS_ENV: test</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install System Dependencies for Playwright</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            sudo apt-get update &amp;&amp; sudo apt-get install -y \</span></span>
+<span class="line"><span>            libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \</span></span>
+<span class="line"><span>            libxcomposite1 libxdamage1 libgbm1 libpango-1.0-0 libxrandr2 \</span></span>
+<span class="line"><span>            libcups2 libdrm2 libxshmfence1 libasound2</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Frontend Dependencies</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npm ci</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Playwright Browsers</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx playwright install</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Bundler</span></span>
+<span class="line"><span>          command: gem install bundler</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Rails Gems</span></span>
+<span class="line"><span>          command: cd backend &amp;&amp; bundle install</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Start Rails Backend</span></span>
+<span class="line"><span>          command: cd backend &amp;&amp; rails server -e test -p 3000</span></span>
+<span class="line"><span>          background: true</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Start Nuxt Frontend</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx nuxi dev -p 3001</span></span>
+<span class="line"><span>          background: true</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Wait for Services to Start</span></span>
+<span class="line"><span>          command: sleep 10</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Playwright Tests</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx playwright test spec/e2e</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>workflows:</span></span>
+<span class="line"><span>  version: 2</span></span>
+<span class="line"><span>  test_workflow:</span></span>
+<span class="line"><span>    jobs:</span></span>
+<span class="line"><span>      - vitest</span></span>
+<span class="line"><span>      - playwright</span></span></code></pre>
+</li>
+<li>Let’s commit these changes, push them up and run Playwright on CircleCI:
+<ul>
+<li><code>git add .</code></li>
+<li><code>git commit -m &quot;Add Playwright&quot;</code></li>
+<li><code>git push</code></li>
+<li>That should start the tests running and now Vitest and Playwright should pass and show green.</li>
+</ul>
+</li>
+</ol>
+<h1 id="rspec-local">RSpec (Local)</h1>
+<p>Here we’ll create a simple RSpec test for the Rails HelloController. Then we’ll verify it passes when running locally.</p>
+<ol>
+<li>Install RSpec:
+<ul>
+<li><code>cd backend</code></li>
+<li><code>bundle add rspec-rails --group &quot;development, test&quot;</code></li>
+<li><code>rails generate rspec:install</code></li>
+</ul>
+</li>
+<li>Create a HelloController test:
+<ul>
+<li><code>mkdir -p spec/requests/api/v1</code></li>
+<li><code>touch spec/requests/api/v1/hello_spec.rb</code></li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/spec/requests/api/v1/hello_spec.rb</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># frozen_string_literal: true</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>require &#39;rails_helper&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>RSpec.describe &quot;Api::V1::Hello&quot;, type: :request do</span></span>
+<span class="line"><span>  describe &quot;GET /api/v1/hello&quot; do</span></span>
+<span class="line"><span>    it &quot;returns a JSON message from the hello controller&quot; do</span></span>
+<span class="line"><span>      get &quot;/api/v1/hello&quot;</span></span>
+<span class="line"><span>      expect(response).to have_http_status(:ok)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      json_body = JSON.parse(response.body)</span></span>
+<span class="line"><span>      expect(json_body[&quot;message&quot;]).to eq(&quot;Hello from Rails!&quot;)</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Run RSpec locally:
+<ul>
+<li><code>rspec</code> (1 test should run and pass)</li>
+</ul>
+</li>
+<li><code>cd ..</code></li>
+</ol>
+<h1 id="rspec-on-local-docker">RSpec On Local Docker</h1>
+<ol>
+<li>
+<p>In the root directory of our app, let’s add <code>db</code> and <code>rspec</code> services to <code>docker-compose.yml</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># docker-compose.yml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>services:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    image: cimg/node:18.18</span></span>
+<span class="line"><span>    working_dir: /app/frontend</span></span>
+<span class="line"><span>    command: bash -c &quot;npm ci &amp;&amp; npx nuxi prepare &amp;&amp; npx vitest spec/components&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  db:</span></span>
+<span class="line"><span>    image: postgres:13</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      POSTGRES_USER: postgres</span></span>
+<span class="line"><span>      POSTGRES_PASSWORD: postgres</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;5432:5432&quot;</span></span>
+<span class="line"><span>    healthcheck:</span></span>
+<span class="line"><span>      test: [&quot;CMD&quot;, &quot;pg_isready&quot;, &quot;-U&quot;, &quot;postgres&quot;]</span></span>
+<span class="line"><span>      interval: 5s</span></span>
+<span class="line"><span>      timeout: 10s</span></span>
+<span class="line"><span>      retries: 5</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rspec:</span></span>
+<span class="line"><span>    image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>    working_dir: /app/backend</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      RAILS_ENV: test</span></span>
+<span class="line"><span>      DB_HOST: db</span></span>
+<span class="line"><span>      DB_USERNAME: postgres</span></span>
+<span class="line"><span>      DB_PASSWORD: postgres</span></span>
+<span class="line"><span>      DB_PORT: 5432</span></span>
+<span class="line"><span>    command: bash -c &quot;./wait-for-it.sh db:5432 -- bundle install &amp;&amp; bin/rails db:create db:migrate &amp;&amp; rspec&quot;</span></span>
+<span class="line"><span>    volumes:</span></span>
+<span class="line"><span>      - .:/app</span></span>
+<span class="line"><span>      - ./wait-for-it.sh:/app/backend/wait-for-it.sh</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      db:</span></span>
+<span class="line"><span>        condition: service_healthy</span></span></code></pre>
+</li>
+<li>
+<p>Let’s download a <code>wait-for-it.sh</code> script to our app’s root directory and set the file permissions. This lets us wait for the database to be ready before running RSpec:</p>
+<ul>
+<li><code>curl -o wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh</code></li>
+<li><code>chmod +x wait-for-it.sh</code></li>
+</ul>
+</li>
+<li>
+<p>In <code>backend/config/database.yml</code>, change the <code>test:</code> section to:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>test:</span></span>
+<span class="line"><span>  &lt;&lt;: *default</span></span>
+<span class="line"><span>  database: backend_test</span></span>
+<span class="line"><span>  username: &lt;%= ENV.fetch(&quot;DB_USERNAME&quot;, &quot;postgres&quot;) %&gt;</span></span>
+<span class="line"><span>  password: &lt;%= ENV.fetch(&quot;DB_PASSWORD&quot;, &quot;postgres&quot;) %&gt;</span></span>
+<span class="line"><span>  host: &lt;%= ENV.fetch(&quot;DB_HOST&quot;, &quot;localhost&quot;) %&gt;</span></span>
+<span class="line"><span>  port: &lt;%= ENV.fetch(&quot;DB_PORT&quot;, &quot;5432&quot;) %&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Run RSpec locally on Docker:</p>
+<ul>
+<li><code>docker-compose down --volumes --remove-orphans</code></li>
+<li><code>docker-compose run --rm rspec</code> (you should see in green <code>1 example, 0 failures</code>)</li>
+</ul>
+</li>
+<li>
+<p>Make sure RSpec still works locally:</p>
+<ul>
+<li><code>cd backend</code></li>
+<li><code>rspec</code> (you should see in green <code>1 example, 0 failures</code> here, too)</li>
+<li><code>cd ..</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="rspec-on-circleci">RSpec On CircleCI</h2>
+<ol>
+<li>Let’s now add RSpec to our <code>.circleci/config.yml</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># .circleci/config.yml</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>jobs:</span></span>
+<span class="line"><span>  vitest:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/node:18.18</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install dependencies</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npm ci</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Generate Nuxt files</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx nuxi prepare</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Vitest</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx vitest spec/components</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  playwright:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>        environment:</span></span>
+<span class="line"><span>          RAILS_ENV: test</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install System Dependencies for Playwright</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            sudo apt-get update &amp;&amp; sudo apt-get install -y \</span></span>
+<span class="line"><span>            libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \</span></span>
+<span class="line"><span>            libxcomposite1 libxdamage1 libgbm1 libpango-1.0-0 libxrandr2 \</span></span>
+<span class="line"><span>            libcups2 libdrm2 libxshmfence1 libasound2</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Frontend Dependencies</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npm ci</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Playwright Browsers</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx playwright install</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Bundler</span></span>
+<span class="line"><span>          command: gem install bundler</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Rails Gems</span></span>
+<span class="line"><span>          command: cd backend &amp;&amp; bundle install</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Start Rails Backend</span></span>
+<span class="line"><span>          command: cd backend &amp;&amp; rails server -e test -p 3000</span></span>
+<span class="line"><span>          background: true</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Start Nuxt Frontend</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx nuxi dev -p 3001</span></span>
+<span class="line"><span>          background: true</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Wait for Services to Start</span></span>
+<span class="line"><span>          command: sleep 10</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Playwright Tests</span></span>
+<span class="line"><span>          command: cd frontend &amp;&amp; npx playwright test spec/e2e</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  rspec:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/ruby:3.3-node</span></span>
+<span class="line"><span>        environment:</span></span>
+<span class="line"><span>          RAILS_ENV: test</span></span>
+<span class="line"><span>      - image: postgres:13</span></span>
+<span class="line"><span>        environment:</span></span>
+<span class="line"><span>          POSTGRES_USER: postgres</span></span>
+<span class="line"><span>          POSTGRES_PASSWORD: postgres</span></span>
+<span class="line"><span>          POSTGRES_DB: backend_test</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Wait for Database</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            for i in {1..30}; do</span></span>
+<span class="line"><span>              pg_isready -h db -p 5432 -U postgres &amp;&amp; break || sleep 2;</span></span>
+<span class="line"><span>            done</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Dependencies</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            cd backend &amp;&amp; gem install bundler &amp;&amp; bundle install</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Database Setup</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            cd backend &amp;&amp; bin/rails db:create db:migrate</span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run RSpec</span></span>
+<span class="line"><span>          command: cd backend &amp;&amp; rspec</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>workflows:</span></span>
+<span class="line"><span>  version: 2</span></span>
+<span class="line"><span>  test_workflow:</span></span>
+<span class="line"><span>    jobs:</span></span>
+<span class="line"><span>      - rspec</span></span>
+<span class="line"><span>      - vitest</span></span>
+<span class="line"><span>      - playwright</span></span></code></pre>
+</li>
+<li>Just commit your changes and push:
+<ul>
+<li><code>git add .</code></li>
+<li><code>git commit -m &quot;Add RSpec&quot;</code></li>
+<li><code>git push</code> (rspec, vitest and playwright should all be green and passing on CircleCI)</li>
+</ul>
+</li>
+</ol>
+<h2 id="redeploy-to-flyio">Redeploy To Fly.io</h2>
+<p>It’s time to redeploy our app and make sure all the changes we’ve been making haven’t broken prod. It’s ok to do these two steps at the same time if you want.</p>
+<ol>
+<li>Let’s redeploy our backend:
+<ul>
+<li><code>cd backend</code></li>
+<li><code>fly deploy</code></li>
+</ul>
+</li>
+<li>Let’s redeploy our frontend
+<ul>
+<li><code>cd .../frontend</code></li>
+<li><code>fly deploy</code></li>
+</ul>
+</li>
+<li>Go to your frontend app url in a browser.
+<ul>
+<li>You should see “Hello from Nuxt!” and “Hello from Rails!”</li>
+</ul>
+</li>
+</ol> <!-- @ts-expect-error: Custom attributes for Utterances script --> <script src="https://utteranc.es/client.js" repo="mark-mcdermott/mark-mcdermott.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script> </div> </article> <footer class="mt-12" data-astro-cid-olvf4l2g> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span data-astro-cid-i45duxs4>markmcdermott.io</span> </a> <p data-astro-cid-i45duxs4> <a href="https://github.com/mark-mcdermott" data-astro-cid-i45duxs4>github</a> |
+<a href="https://bsky.app/profile/mark-mcdermott.bsky.social" data-astro-cid-i45duxs4>bluesky</a> |
+<a href="https://www.linkedin.com/in/mark-mcdermott-6a174916/" data-astro-cid-i45duxs4>linkedin</a></p> <p data-astro-cid-i45duxs4>&copy; 2025 mark mcdermott </p>  </footer>  </body></html> 

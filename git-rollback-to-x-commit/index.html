@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.2"><title>Mark McDermott</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DZnDNxNb.js"></script><link rel="stylesheet" href="/_astro/_slug_.B_QYcVCA.css">
+<style>footer[data-astro-cid-olvf4l2g]{display:flex;flex-flow:column wrap;align-content:flex-end}.markdown{line-height:28px;--path: none;--radius-top: 12px;--radius-bottom: 12px;--padding-top: 1rem;--padding-bottom: 1rem}.markdown p{padding-bottom:2rem}.markdown a{border-bottom-width:1px;border-color:var(--link);color:var(--link)}.markdown hr{padding-top:2rem;opacity:.6}@media (prefers-color-scheme: dark){.markdown hr{opacity:.1}}.markdown h1{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:2.25rem;line-height:2.5rem;font-weight:700}.markdown h2{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:1.875rem;line-height:2.25rem;font-weight:700}.markdown h3{margin-top:.5rem;padding-bottom:2rem;font-size:1.5rem;line-height:2rem;font-weight:700}.markdown h4{margin-top:.5rem;padding-bottom:2rem;font-size:1.25rem;line-height:1.75rem;font-weight:700}.markdown :not(pre)>code{background:var(--inlineCode-bg);color:var(--inlineCode-text);padding:.15em .2em .05em;white-space:normal}.markdown pre{margin-left:-1rem;margin-right:-1rem;margin-bottom:2rem;overflow-y:auto;padding:1rem;font-size:.875rem;line-height:1.25rem;clip-path:var(--path);border-top-right-radius:var(--radius-top);border-top-left-radius:var(--radius-top);border-bottom-right-radius:var(--radius-bottom);border-bottom-left-radius:var(--radius-bottom);padding-top:var(--padding-top);padding-bottom:var(--padding-bottom)}.markdown pre code{width:auto}.markdown blockquote{position:relative;left:-.5rem;margin-left:-1rem;margin-bottom:2rem;padding-left:1rem;font-style:italic;border-left:3px solid hsla(0,0%,0%,.9);border-left-color:inherit;opacity:.8}.markdown blockquote p{margin:0;padding:0}.markdown p img{margin-bottom:0}.markdown ul{margin-top:0;padding:0;margin-bottom:1.75rem;list-style-position:outside;list-style-image:none;list-style:disc}.markdown li{margin-bottom:.875rem}.markdown img{margin-bottom:2rem;max-width:100%}.markdown pre [data-highlighted-line]{margin-left:-16px;padding-left:12px;border-left:4px solid #ffa7c4;background-color:#022a4b;display:block;padding-right:1em}
+</style>
+<link rel="stylesheet" href="/_astro/index.CX5Zbgb8.css"></head> <body class="mx-auto max-w-7xl bg-[--bg] px-5 py-12 text-[--text]">   <header class="mb-14 flex flex-row place-content-between"> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span>markmcdermott.io (js,&nbsp;ruby,&nbsp;...etc)</span> </a> <span class="min-w-20 relative top-[4px] italic">
+by
+<a class="scale-100 active:scale-100" target="_blank" href="https://github.com/mark-mcdermott"><img src="https://avatars.githubusercontent.com/u/9694783?v=5" alt="mark mcdermott" title="mark mcdermott" loading="lazy" decoding="async" fetchpriority="auto" width="32" height="32" class="relative -top-1 mx-2 inline h-8 w-8 rounded-full"> </a> </span> </header>  <article> <h1 class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']" style="--myColor1:var(--pink);--myColor2:var(--purple);background-image:linear-gradient(45deg, var(--myColor1), var(--myColor2));background-clip:text;-webkit-background-clip:text;color:transparent;transition:--myColor1 0.2s ease-out, --myColor2 0.2s ease-in-out"> Git Rollback Roundup </h1> <div class="mt-1 post-subtitle" style="color: var(--purple)"><p>Getting Dangerous With Git</p></div> <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300"> 05/12/2025 </p> <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
+read time：4 mins </p> <div class="markdown mt-10"> <p>I was just working on this blog and realized I had to rollback to a few commits prior. I had to look it up, so thought I would document it here for posterity.</p>
+<h2 id="rollback-to-x-commit">Rollback To X Commit</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th style="text-align:left">Type</th><th style="text-align:left">Command</th><th style="text-align:left">Danger Level</th><th style="text-align:left">What Happens</th><th style="text-align:left">History?</th><th style="text-align:left">Working Directory Afterwards</th></tr></thead><tbody><tr><td style="text-align:left">(Dangerous) Hard reset</td><td style="text-align:left"><code>git reset --hard &lt;hash&gt;</code></td><td style="text-align:left"><span role="img" aria-label="warning">⚠️</span> High</td><td style="text-align:left">Moves branch pointer back, deletes all commits after <code>&lt;hash&gt;</code></td><td style="text-align:left">Commits after <code>&lt;hash&gt;</code> are <strong>erased</strong></td><td style="text-align:left">Matches <code>&lt;hash&gt;</code> exactly (no changes staged or unstaged)</td></tr><tr><td style="text-align:left">(Dangerous, but keep changes staged) Soft reset</td><td style="text-align:left"><code>git reset --soft &lt;hash&gt;</code></td><td style="text-align:left"><span role="img" aria-label="warning">⚠️</span> High</td><td style="text-align:left">Moves branch pointer back, keeps changes from later commits staged in index</td><td style="text-align:left">Commits after <code>&lt;hash&gt;</code> are <strong>erased</strong></td><td style="text-align:left">Later changes are staged (ready to recommit)</td></tr><tr><td style="text-align:left">(Safe) Revert commits</td><td style="text-align:left"><code>git revert &lt;hash&gt;..HEAD</code></td><td style="text-align:left"><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td style="text-align:left">Creates new commit(s) that undo changes after <code>&lt;hash&gt;</code></td><td style="text-align:left">All commits remain in history</td><td style="text-align:left">Clean working directory (no unstaged changes)</td></tr><tr><td style="text-align:left">(Safe, with unstaged changes) Revert without committing</td><td style="text-align:left"><code>git revert &lt;hash&gt;..HEAD --no-commit</code></td><td style="text-align:left"><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td style="text-align:left">Prepares undo changes but doesn’t commit them</td><td style="text-align:left">All commits remain in history</td><td style="text-align:left">Later changes are unstaged (you must commit manually)</td></tr></tbody></table>
+<p>There are three more permutations of this chart though:</p>
+<ol>
+<li>doing all 4 methods on just the last commit</li>
+<li>doing all 4 methods on a single commit (not the last commit though)</li>
+<li>doing all 4 methods on a range of commits (but the range ends before the last commit)</li>
+</ol>
+<h1 id="other-rollback-scenarios">Other Rollback Scenarios</h1>
+<h2 id="1-rollback-of-just-the-last-commit">1. Rollback of <strong>just the last commit</strong></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Type</th><th>Command</th><th>Danger Level</th><th>What Happens</th><th>History?</th><th>Working Directory Afterwards</th></tr></thead><tbody><tr><td>Hard reset</td><td><code>git reset --hard HEAD~1</code></td><td><span role="img" aria-label="warning">⚠️</span> High</td><td>Deletes the last commit</td><td>Last commit erased</td><td>Matches state before last commit</td></tr><tr><td>Soft reset</td><td><code>git reset --soft HEAD~1</code></td><td><span role="img" aria-label="warning">⚠️</span> High</td><td>Removes the last commit, but keeps its changes staged</td><td>Last commit erased</td><td>Last commit’s changes staged</td></tr><tr><td>Revert</td><td><code>git revert HEAD</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Creates a new commit that undoes the last commit</td><td>Last commit stays in history</td><td>Clean (no unstaged changes)</td></tr><tr><td>Revert without committing</td><td><code>git revert HEAD --no-commit</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Prepares undo of last commit but doesn’t commit</td><td>Last commit stays in history</td><td>Last commit’s changes unstaged</td></tr></tbody></table>
+<h2 id="2-rollback-of-a-single-commit-that-is-not-the-last-commit">2. Rollback of <strong>a single commit that is not the last commit</strong></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Type</th><th>Command</th><th>Danger Level</th><th>What Happens</th><th>History?</th><th>Working Directory Afterwards</th></tr></thead><tbody><tr><td>Hard reset</td><td><span role="img" aria-label="cross mark">❌</span> Not practical (would erase <em>all commits</em> after the target)</td><td><span role="img" aria-label="warning">⚠️</span> Very High</td><td>Would require rewriting history and deleting later commits</td><td>All commits after target erased</td><td>Matches that earlier commit</td></tr><tr><td>Soft reset</td><td><span role="img" aria-label="cross mark">❌</span> Not practical (same issue as hard reset)</td><td><span role="img" aria-label="warning">⚠️</span> Very High</td><td>Erases all commits after the target, changes staged</td><td>All commits after target erased</td><td>Those later changes staged</td></tr><tr><td>Revert</td><td><code>git revert &lt;hash&gt;</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Creates a new commit undoing just that one commit</td><td>Commit stays in history</td><td>Clean (no unstaged changes)</td></tr><tr><td>Revert without committing</td><td><code>git revert &lt;hash&gt; --no-commit</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Prepares undo of just that one commit, unstaged</td><td>Commit stays in history</td><td>Undo changes are unstaged</td></tr></tbody></table>
+<h2 id="3-rollback-of-a-range-of-commits-ending-before-the-last-commit">3. Rollback of <strong>a range of commits (ending before the last commit)</strong></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Type</th><th>Command</th><th>Danger Level</th><th>What Happens</th><th>History?</th><th>Working Directory Afterwards</th></tr></thead><tbody><tr><td>Hard reset</td><td><span role="img" aria-label="cross mark">❌</span> Not practical (would wipe all commits after the start of the range)</td><td><span role="img" aria-label="warning">⚠️</span> Very High</td><td>Removes entire tail of history, including commits <em>after</em> the range</td><td>Later commits erased</td><td>Matches earlier commit before range</td></tr><tr><td>Soft reset</td><td><span role="img" aria-label="cross mark">❌</span> Not practical (same issue)</td><td><span role="img" aria-label="warning">⚠️</span> Very High</td><td>Removes entire tail, changes staged</td><td>Later commits erased</td><td>Those later changes staged</td></tr><tr><td>Revert</td><td><code>git revert &lt;hash1&gt;^..&lt;hash2&gt;</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Creates new commit(s) undoing all commits in the range</td><td>Commits stay in history</td><td>Clean (no unstaged changes)</td></tr><tr><td>Revert without committing</td><td><code>git revert &lt;hash1&gt;^..&lt;hash2&gt; --no-commit</code></td><td><span role="img" aria-label="white heavy check mark">✅</span> Safe</td><td>Prepares undo of all commits in the range</td><td>Commits stay in history</td><td>Undo changes are unstaged</td></tr></tbody></table> <!-- @ts-expect-error: Custom attributes for Utterances script --> <script src="https://utteranc.es/client.js" repo="mark-mcdermott/mark-mcdermott.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script> </div> </article> <footer class="mt-12" data-astro-cid-olvf4l2g> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span data-astro-cid-i45duxs4>markmcdermott.io</span> </a> <p data-astro-cid-i45duxs4> <a href="https://github.com/mark-mcdermott" data-astro-cid-i45duxs4>github</a> |
+<a href="https://bsky.app/profile/mark-mcdermott.bsky.social" data-astro-cid-i45duxs4>bluesky</a> |
+<a href="https://www.linkedin.com/in/mark-mcdermott-6a174916/" data-astro-cid-i45duxs4>linkedin</a></p> <p data-astro-cid-i45duxs4>&copy; 2025 mark mcdermott </p>  </footer>  </body></html> 
