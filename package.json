@@ -6,8 +6,10 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
-    "deploy": "gh-pages -d dist",
-    "build:deploy": "yarn build && yarn deploy",
+    "commit": "git add -A && git commit -m \"Publish: $(date +%F)\"",
+    "deploy": "git push origin main",
+    "open": "open https://markmcdermott.io/?bust=$(date +%s)",
+    "publish": "yarn build && yarn commit && yarn deploy && sleep 3 && yarn open",
     "preview": "astro preview",
     "astro": "astro"
   },
