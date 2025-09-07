@@ -26,4 +26,5 @@ export default defineConfig({
     rehypePlugins: [rehypeHeadingIds, rehypeAccessibleEmojis, rehypeKatex],
     remarkPlugins: [remarkToc, remarkMath],
   },
+  outDir: './docs',
 });
