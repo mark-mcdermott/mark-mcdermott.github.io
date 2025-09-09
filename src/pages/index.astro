@@ -2,7 +2,6 @@
 import Layout from "../layouts/blogIndexLayout.astro";
 import Link from "../components/link.astro";
 import PostTitle from "../components/postTitle.astro";
-
 import { getCollection, type CollectionEntry } from "astro:content";
 
 import { unified } from "unified";
@@ -10,51 +9,59 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 
-// 1) load posts from the "posts" content collection (skip drafts)
 const posts: CollectionEntry<"posts">[] = await getCollection(
   "posts",
-  ({ data }) => !data.draft
+  ({ data }) => !data.draft,
 );
 
-// 2) sort by date desc (schema has date as string "YYYY-MM-DD")
-posts.sort((a, b) => {
-  const ta = Date.parse(a.data.date as string);
-  const tb = Date.parse(b.data.date as string);
-  return tb - ta; // newest first
-});
+// newest first
+posts.sort((a, b) =>
+  Date.parse(a.data.date) < Date.parse(b.data.date) ? 1 : -1,
+);
 
-// 3) pre-render spoiler markdown -> HTML (store alongside data)
-for (const p of posts) {
-  const spoilerMarkdown = p.data.spoiler ?? "";
-  const processed = await unified()
-    .use(remarkParse)
-    .use(remarkRehype)
-    .use(rehypeStringify)
-    .process(spoilerMarkdown);
-  // @ts-expect-error add computed field for convenience
-  p.data.spoilerHTML = String(processed);
-}
+// precompute display data
+const items = await Promise.all(
+  posts.map(async (p) => {
+    const cleanSlug = p.slug
+      .split("/")
+      .map((seg) => seg.replace(/^\d{4}-\d{2}-\d{2}-/, ""))
+      .join("/");
+    const processed = await unified()
+      .use(remarkParse)
+      .use(remarkRehype)
+      .use(rehypeStringify)
+      .process(p.data.spoiler ?? "");
+    return {
+      href: `/${cleanSlug}/`,
+      date: p.data.date,
+      title: p.data.title,
+      spoilerHTML: String(processed),
+    };
+  }),
+);
 ---
 
 <Layout>
   <div class="relative -top-[10px] flex flex-col gap-8">
     {
-      posts.map((p) => (
+      items.map((it) => (
         <Link
-          classList={["block scale-100 py-4 hover:scale-[1.005] active:scale-100"]}
+          classList={[
+            "block scale-100 py-4 hover:scale-[1.005] active:scale-100",
+          ]}
           target="_self"
-          href={`/${p.slug}/`}                  // ✅ use built-in slug
+          href={it.href}
         >
           <article>
             <p class="text-[13px] text-gray-700 dark:text-gray-300">
-              {new Date(p.data.date as string).toLocaleDateString("en-US", {
+              {new Date(it.date).toLocaleDateString("en-US", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
               })}
             </p>
-            <PostTitle title={p.data.title} date={p.data.date as string} />
-            <div class="mt-1" set:html={p.data.spoilerHTML}></div>
+            <PostTitle title={it.title} date={it.date} />
+            <div class="mt-1" set:html={it.spoilerHTML} />
           </article>
         </Link>
       ))

@@ -4,7 +4,6 @@ import "@/styles/markdown.css";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { getPostWords, readTimeStr } from "@/utils/utils";
 import "@fontsource/montserrat/900.css";
-import fs from "node:fs";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
@@ -12,36 +11,34 @@ import rehypeStringify from "rehype-stringify";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts", ({ data }) => !data.draft);
-  return posts.map((p) => ({
-    params: { slug: p.slug }, // ✅ use built-in slug
-    props: { entry: p }, // pass the entry through
-  }));
+  return posts.map((p) => {
+    const clean = p.slug
+      .split("/")
+      .map((seg) => seg.replace(/^\d{4}-\d{2}-\d{2}-/, ""))
+      .join("/");
+    return { params: { slug: clean }, props: { entry: p } };
+  });
 }
 
-// hydrate the entry for this page
 const entry: CollectionEntry<"posts"> = Astro.props.entry;
 const { Content } = await entry.render();
 const fm = entry.data;
 
-// For read time, use entry.body (raw MD/MDX without frontmatter)
-const source = entry.body ?? "";
-const words = getPostWords(source);
+const words = getPostWords(entry.body ?? "");
 const readTime = readTimeStr(words);
 
-// Pre-process spoiler markdown -> HTML
-const spoilerMarkdown = fm.spoiler ?? "";
+// spoiler markdown -> HTML
 const processed = await unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeStringify)
-  .process(spoilerMarkdown);
+  .process(fm.spoiler ?? "");
 const spoilerHTML = String(processed);
 
-// Date string in your schema is "YYYY-MM-DD"; render it nicely
 const prettyDate = new Date(fm.date).toLocaleDateString("en-US", {
-  year: "numeric",
-  month: "2-digit",
   day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
 });
 ---
 
@@ -58,7 +55,6 @@ const prettyDate = new Date(fm.date).toLocaleDateString("en-US", {
       style="color: var(--purple)"
       set:html={spoilerHTML}
     />
-
     <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300">
       {prettyDate}
     </p>

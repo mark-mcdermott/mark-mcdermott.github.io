@@ -33,6 +33,7 @@ Ie., Notes To Self
 ```
 yarn publish
 ```
+### Publishing (The Long Way)
 ```
 yarn install           # only if deps changed
 yarn build             # builds into ./docs
