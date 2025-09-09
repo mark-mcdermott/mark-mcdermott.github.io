@@ -1,90 +1,71 @@
 ---
 import BlogLayout from "@/layouts/blogPostLayout.astro";
 import "@/styles/markdown.css";
-import type { Frontmatter } from "./types";
-import type { MarkdownInstance } from "astro";
-import fs from "node:fs";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { getPostWords, readTimeStr } from "@/utils/utils";
 import "@fontsource/montserrat/900.css";
+import fs from "node:fs";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
-import type { MDXInstance } from "astro";
-
-const pathname = Astro.url.pathname;
-const isActive = pathname === "/";
 
 export async function getStaticPaths() {
-  const posts = (await Astro.glob("../content/posts/**/*.mdx")) as MDXInstance<
-    Record<string, any>
-  >[];
-
-  return posts.map((post) => {
-    const fileContent = fs.readFileSync(post.file, { encoding: "utf8" });
-
-    return {
-      params: {
-        slug: post.frontmatter.href,
-      },
-      props: {
-        post,
-        fileContent,
-      },
-    };
-  });
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return posts.map((p) => ({
+    params: { slug: p.slug }, // ✅ use built-in slug
+    props: { entry: p }, // pass the entry through
+  }));
 }
 
-const { Content, frontmatter } = Astro.props.post;
-const { fileContent } = Astro.props;
-const words = getPostWords(fileContent);
+// hydrate the entry for this page
+const entry: CollectionEntry<"posts"> = Astro.props.entry;
+const { Content } = await entry.render();
+const fm = entry.data;
+
+// For read time, use entry.body (raw MD/MDX without frontmatter)
+const source = entry.body ?? "";
+const words = getPostWords(source);
 const readTime = readTimeStr(words);
 
-// Pre-process the HTML for each post’s spoiler
-const spoilerMarkdown = Astro.props.post.frontmatter.spoiler || "";
+// Pre-process spoiler markdown -> HTML
+const spoilerMarkdown = fm.spoiler ?? "";
 const processed = await unified()
   .use(remarkParse)
   .use(remarkRehype)
   .use(rehypeStringify)
   .process(spoilerMarkdown);
-Astro.props.post.frontmatter.spoilerHTML = String(processed);
+const spoilerHTML = String(processed);
+
+// Date string in your schema is "YYYY-MM-DD"; render it nicely
+const prettyDate = new Date(fm.date).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 ---
 
-<BlogLayout
-  ><article>
+<BlogLayout>
+  <article>
     <h1
       class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']"
-      style={{
-        "--myColor1": isActive ? "var(--text)" : "var(--pink)",
-        "--myColor2": isActive ? "var(--text)" : "var(--purple)",
-        backgroundImage:
-          "linear-gradient(45deg, var(--myColor1), var(--myColor2))",
-        backgroundClip: "text",
-        WebkitBackgroundClip: "text",
-        color: "transparent",
-        transition: "--myColor1 0.2s ease-out, --myColor2 0.2s ease-in-out",
-      }}
     >
-      {frontmatter.title}
+      {fm.title}
     </h1>
+
     <div
       class="mt-1 post-subtitle"
       style="color: var(--purple)"
-      set:html={frontmatter.spoilerHTML}
+      set:html={spoilerHTML}
     />
+
     <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300">
-      {
-        new Date(frontmatter.date).toLocaleDateString("cn", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      }
+      {prettyDate}
+    </p>
+    <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
+      read time: {readTime}
     </p>
 
-    <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
-      read time：{readTime}
-    </p>
     <div class="markdown mt-10">
       <Content />
       <!-- @ts-expect-error: Custom attributes for Utterances script -->
@@ -97,5 +78,5 @@ Astro.props.post.frontmatter.spoilerHTML = String(processed);
         crossorigin="anonymous"
         async></script>
     </div>
-  </article></BlogLayout
->
+  </article>
+</BlogLayout>

@@ -2,54 +2,59 @@
 import Layout from "../layouts/blogIndexLayout.astro";
 import Link from "../components/link.astro";
 import PostTitle from "../components/postTitle.astro";
-import type { Frontmatter } from "./types";
 
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import rehypeStringify from 'rehype-stringify';
+import { getCollection, type CollectionEntry } from "astro:content";
 
-const posts = await Astro.glob<Frontmatter>("../content/posts/**/*.mdx");
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import rehypeStringify from "rehype-stringify";
+
+// 1) load posts from the "posts" content collection (skip drafts)
+const posts: CollectionEntry<"posts">[] = await getCollection(
+  "posts",
+  ({ data }) => !data.draft
+);
+
+// 2) sort by date desc (schema has date as string "YYYY-MM-DD")
 posts.sort((a, b) => {
-  return Date.parse(a.frontmatter.date) < Date.parse(b.frontmatter.date)
-    ? 1
-    : -1;
+  const ta = Date.parse(a.data.date as string);
+  const tb = Date.parse(b.data.date as string);
+  return tb - ta; // newest first
 });
 
-// Pre-process the HTML for each post’s spoiler
-for (const post of posts) {
-  const spoilerMarkdown = post.frontmatter.spoiler || '';
+// 3) pre-render spoiler markdown -> HTML (store alongside data)
+for (const p of posts) {
+  const spoilerMarkdown = p.data.spoiler ?? "";
   const processed = await unified()
     .use(remarkParse)
     .use(remarkRehype)
     .use(rehypeStringify)
     .process(spoilerMarkdown);
-  post.frontmatter.spoilerHTML = String(processed);
+  // @ts-expect-error add computed field for convenience
+  p.data.spoilerHTML = String(processed);
 }
 ---
 
 <Layout>
   <div class="relative -top-[10px] flex flex-col gap-8">
     {
-      posts.map((item) => (
+      posts.map((p) => (
         <Link
           classList={["block scale-100 py-4 hover:scale-[1.005] active:scale-100"]}
           target="_self"
-          href={"/" + item.frontmatter.href + "/"}
+          href={`/${p.slug}/`}                  // ✅ use built-in slug
         >
           <article>
             <p class="text-[13px] text-gray-700 dark:text-gray-300">
-              {new Date(item.frontmatter.date).toLocaleDateString("cn", {
+              {new Date(p.data.date as string).toLocaleDateString("en-US", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
               })}
             </p>
-            <PostTitle
-              title={item.frontmatter.title}
-              date={item.frontmatter.date}
-            />
-            <div class="mt-1" set:html={item.frontmatter.spoilerHTML}></div>
+            <PostTitle title={p.data.title} date={p.data.date as string} />
+            <div class="mt-1" set:html={p.data.spoilerHTML}></div>
           </article>
         </Link>
       ))
