@@ -1,0 +1,1796 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.2"><title>Mark McDermott</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DZnDNxNb.js"></script><link rel="stylesheet" href="/_astro/_slug_.yuvoUanq.css">
+<style>footer[data-astro-cid-olvf4l2g]{display:flex;flex-flow:column wrap;align-content:flex-end}.markdown{line-height:28px;--path: none;--radius-top: 12px;--radius-bottom: 12px;--padding-top: 1rem;--padding-bottom: 1rem}.markdown p{padding-bottom:2rem}.markdown a{border-bottom-width:1px;border-color:var(--link);color:var(--link)}.markdown hr{padding-top:2rem;opacity:.6}@media (prefers-color-scheme: dark){.markdown hr{opacity:.1}}.markdown h1{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:2.25rem;line-height:2.5rem;font-weight:700}.markdown h2{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:1.875rem;line-height:2.25rem;font-weight:700}.markdown h3{margin-top:.5rem;padding-bottom:2rem;font-size:1.5rem;line-height:2rem;font-weight:700}.markdown h4{margin-top:.5rem;padding-bottom:2rem;font-size:1.25rem;line-height:1.75rem;font-weight:700}.markdown :not(pre)>code{background:var(--inlineCode-bg);color:var(--inlineCode-text);padding:.15em .2em .05em;white-space:normal}.markdown pre{margin-left:-1rem;margin-right:-1rem;margin-bottom:2rem;overflow-y:auto;padding:1rem;font-size:.875rem;line-height:1.25rem;clip-path:var(--path);border-top-right-radius:var(--radius-top);border-top-left-radius:var(--radius-top);border-bottom-right-radius:var(--radius-bottom);border-bottom-left-radius:var(--radius-bottom);padding-top:var(--padding-top);padding-bottom:var(--padding-bottom)}.markdown pre code{width:auto}.markdown blockquote{position:relative;left:-.5rem;margin-left:-1rem;margin-bottom:2rem;padding-left:1rem;font-style:italic;border-left:3px solid hsla(0,0%,0%,.9);border-left-color:inherit;opacity:.8}.markdown blockquote p{margin:0;padding:0}.markdown p img{margin-bottom:0}.markdown ul{margin-top:0;padding:0;margin-bottom:1.75rem;list-style-position:outside;list-style-image:none;list-style:disc}.markdown li{margin-bottom:.875rem}.markdown img{margin-bottom:2rem;max-width:100%}.markdown pre [data-highlighted-line]{margin-left:-16px;padding-left:12px;border-left:4px solid #ffa7c4;background-color:#022a4b;display:block;padding-right:1em}
+</style>
+<link rel="stylesheet" href="/_astro/index.DAnASyZ2.css"></head> <body class="mx-auto max-w-7xl bg-[--bg] px-5 py-12 text-[--text]">   <header class="mb-14 flex flex-row place-content-between"> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span>markmcdermott.io (js,&nbsp;ruby,&nbsp;...etc)</span> </a> <span class="min-w-20 relative top-[4px] italic">
+by
+<a class="scale-100 active:scale-100" target="_blank" href="https://github.com/mark-mcdermott"><img src="https://avatars.githubusercontent.com/u/9694783?v=5" alt="mark mcdermott" title="mark mcdermott" loading="lazy" decoding="async" fetchpriority="auto" width="32" height="32" class="relative -top-1 mx-2 inline h-8 w-8 rounded-full"> </a> </span> </header>   <article> <h1 class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']"> Adding S3 to Barebones Tutorial </h1> <div class="mt-1 post-subtitle" style="color: var(--purple)"><p>Adding S3 to the Barebones Rails/RSpec/Nuxt/Vitest/Playwright/Fly.io Tutorial</p></div> <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300"> 03/02/2025 </p> <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
+read time: 30 mins </p> <div class="markdown mt-10"> <h1 id="minimal-rails-api--nuxt-3-app-tutorial">Minimal Rails API &amp; Nuxt 3 App Tutorial</h1>
+<h2 id="overview">Overview</h2>
+<p>In this tutorial, you’ll build a lean Rails API (backend) and a Nuxt 3 app (frontend), both hosted on fly.io. There will be RSpec, Vitest and Playwright tests, which will run locally and on CircleCI. Avatars will be hosted on S3.</p>
+<h2 id="part-i-barebones-app-with-circleci-tests-on-flyio">Part I: Barebones App With CircleCI Tests On Fly.io</h2>
+<h3 id="1-initial-setup">1. Initial Setup</h3>
+<ul>
+<li><code>cd ~</code></li>
+<li><code>mkdir app</code></li>
+<li><code>cd app</code></li>
+<li><code>npx nuxi@latest init frontend</code>
+<ul>
+<li>package manager: <code>npm</code></li>
+<li>init git repo: <code>no</code></li>
+<li>modules: <code>eslint</code>, <code>fonts</code>, <code>icon</code>, <code>image</code>, <code>test-utils</code></li>
+</ul>
+</li>
+<li><code>rails new backend --api --database=postgresql</code></li>
+<li><code>rm -rf backend/.git</code></li>
+<li><code>touch .secrets</code></li>
+<li>make <code>~/app/.secrets</code> look like this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>fly.io url details:</span></span>
+<span class="line"><span>  frontend url: </span></span>
+<span class="line"><span>  backend url: </span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>fly.io postgres cluster details</span></span>
+<span class="line"><span>  name: </span></span>
+<span class="line"><span>  Username: </span></span>
+<span class="line"><span>  Password: </span></span>
+<span class="line"><span>  Hostname: </span></span>
+<span class="line"><span>  Flycast: </span></span>
+<span class="line"><span>  Proxy port: </span></span>
+<span class="line"><span>  Postgres port: </span></span>
+<span class="line"><span>  Connection string: </span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>AWS details:</span></span>
+<span class="line"><span>  aws acct id: </span></span>
+<span class="line"><span>  aws region:  </span></span>
+<span class="line"><span>  s3 user policy: </span></span>
+<span class="line"><span>  s3 user: </span></span>
+<span class="line"><span>  s3 user access key: </span></span>
+<span class="line"><span>  s3 user secret access key: </span></span>
+<span class="line"><span>  s3 bucket dev: </span></span>
+<span class="line"><span>  s3 bucket prod: </span></span></code></pre>
+<ul>
+<li><strong>Fly.io Deployment:</strong></li>
+<li><code>cd ~/app/backend</code>
+<ul>
+<li>we have to make a small addition to the default <code>backend/Dockerfile</code> that rails made us. At the end of the <code>apt-get install</code> line on line 22, add one more package to install, <code>libjemalloc2</code></li>
+<li><code>fly launch --name app001-backend</code></li>
+<li>hit enter (for “no”) when it asks a question about wanting to tweak the settings</li>
+<li>watch the output and look for the <code>Postgres cluster</code> details, which end with the line, <code>Save your credentials in a secure place -- you won&#39;t be able to see them again!</code> When you see it, copy and paste it to the corresponding section in your <code>~/app/.secrets</code> file.</li>
+<li>at the end of all the output it will say, <code>Visit your newly deployed app at https://&lt;your backend app name&gt;.fly.dev/</code> - copy/paste the backend app name url it gives you to the <code>backend url:</code> part of your <code>.secrets</code> file</li>
+</ul>
+</li>
+<li><code>cd ~/app/frontend</code>
+<ul>
+<li>like in the backend <code>fly launch</code> line above, your fly.io frontend app name has to be unique in their system, so you may have to run this a few times with different names after the <code>--name </code> part until you find a unique one that works</li>
+<li><code>fly launch --name app001-frontend</code>
+<ul>
+<li>hit enter (for “no”) when it asks a question about wanting to tweak the settings</li>
+<li>copy the frontend app url it gives you at the end of all the output and paste it into your <code>.secrets</code> file at the <code>frontend url:</code> line</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>in a browser, go to your fly.io frontend app url. You should see the default Nuxt placeholder homepage.</li>
+</ul>
+<h3 id="2-building-the-mvp-hello-world-version">2. Building the MVP Hello World Version</h3>
+<h4 id="backend-health-endpoint">Backend Health Endpoint</h4>
+<ul>
+<li><strong>Controller:</strong> Create <code>backend/app/controllers/api/v1/health_controller.rb</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ruby"><code><span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Api::V1::HealthController</span><span style="color:#E1E4E8"> &lt; </span><span style="color:#B392F0">ApplicationController</span></span>
+<span class="line"><span style="color:#F97583">  def</span><span style="color:#B392F0"> show</span></span>
+<span class="line"><span style="color:#E1E4E8">    render </span><span style="color:#79B8FF">json:</span><span style="color:#E1E4E8"> { </span><span style="color:#79B8FF">status:</span><span style="color:#9ECBFF"> &#39;OK&#39;</span><span style="color:#E1E4E8"> }, </span><span style="color:#79B8FF">status:</span><span style="color:#79B8FF"> :ok</span></span>
+<span class="line"><span style="color:#F97583">  end</span></span>
+<span class="line"><span style="color:#F97583">end</span></span></code></pre>
+</li>
+<li><strong>Routes:</strong> Update <code>backend/config/routes.rb</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ruby"><code><span class="line"><span style="color:#79B8FF">Rails</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">application</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">routes</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">draw</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">  namespace </span><span style="color:#79B8FF">:api</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">    namespace </span><span style="color:#79B8FF">:v1</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">      get </span><span style="color:#9ECBFF">&#39;up&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">to:</span><span style="color:#9ECBFF"> &#39;health#show&#39;</span></span>
+<span class="line"><span style="color:#F97583">    end</span></span>
+<span class="line"><span style="color:#F97583">  end</span></span>
+<span class="line"><span style="color:#F97583">end</span></span></code></pre>
+</li>
+</ul>
+<h4 id="nuxt-default-page">Nuxt Default Page</h4>
+<ul>
+<li>
+<p><strong>Home Page:</strong> Create <code>frontend/components/HomeContent.vue</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="vue"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">script</span><span style="color:#B392F0"> setup</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> apiBase</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> useRuntimeConfig</span><span style="color:#E1E4E8">().public.apiBase;</span></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> healthStatus</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> $fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`${</span><span style="color:#E1E4E8">apiBase</span><span style="color:#9ECBFF">}/up`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">template</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Welcome to Our Minimal App!&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;The backend says: {{ JSON.stringify(healthStatus) }}&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">template</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+</li>
+<li>
+<p>edit <code>frontend/app.vue</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="vue"><code><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">template</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">    &lt;</span><span style="color:#85E89D">HomeContent</span><span style="color:#E1E4E8"> /&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">  &lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span>
+<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">template</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+</li>
+<li>
+<p>update <code>frontend/nuxt.config.ts</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>const development = process.env.NODE_ENV !== &#39;production&#39;;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineNuxtConfig({</span></span>
+<span class="line"><span>  devServer: { port: 3001 },</span></span>
+<span class="line"><span>  modules: [</span></span>
+<span class="line"><span>    &#39;@nuxt/eslint&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/fonts&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/icon&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/image&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/test-utils&#39;</span></span>
+<span class="line"><span>  ],</span></span>
+<span class="line"><span>  runtimeConfig: {</span></span>
+<span class="line"><span>    public: {</span></span>
+<span class="line"><span>      apiBase: development ? &#39;http://localhost:3000/api/v1&#39; : &#39;https://app001-backend.fly.dev/api/v1&#39;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>});</span></span></code></pre>
+</li>
+<li>
+<p><strong>Rails CORS:</strong> must be enabled or Playwright will get a 500 error from rails</p>
+<ul>
+<li><code>cd ~/app/backend</code></li>
+<li><code>bundle add rack-cors</code></li>
+<li><code>bundle install</code></li>
+<li>Edit <code>backend/config/initializers/cors.rb</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ruby"><code><span class="line"><span style="color:#79B8FF">Rails</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">application</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">config</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">middleware</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">insert_before</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Rack</span><span style="color:#E1E4E8">::</span><span style="color:#79B8FF">Cors</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">  allow </span><span style="color:#F97583">do</span></span>
+<span class="line"><span style="color:#E1E4E8">    origins </span><span style="color:#9ECBFF">&#39;*&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    resource </span><span style="color:#9ECBFF">&#39;*&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">headers:</span><span style="color:#79B8FF"> :any</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">methods:</span><span style="color:#E1E4E8"> [</span><span style="color:#79B8FF">:get</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">:post</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">:options</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#F97583">  end</span></span>
+<span class="line"><span style="color:#F97583">end</span></span></code></pre>
+</li>
+<li>
+<p><code>cd ~/app/backend &amp;&amp; rails server</code></p>
+</li>
+<li>
+<p><code>cd ~/app/frontend &amp;&amp; npm run dev</code></p>
+</li>
+<li>
+<p>before redeploying, we want to change fly.io’s health check endpoint, to our health check endpoint or we’ll get a 503 when we hit the frontend. In <code>backend/fly.toml</code>, (which fly.io created for us when we did <code>fly launch</code>) change the <code>path = &#39;/up&#39;</code> line in the <code>[[http_service.checks]]</code> section to:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>path = &#39;/api/v1/up&#39;</span></span></code></pre>
+</li>
+<li>
+<p><code>cd ~/app/backend &amp;&amp; fly deploy</code></p>
+</li>
+<li>
+<p><code>cd ~/app/frontend &amp;&amp; fly deploy</code></p>
+</li>
+</ul>
+<h3 id="3-setting-up-testing">3. Setting Up Testing</h3>
+<h4 id="rspec-test-backend">RSpec Test (Backend)</h4>
+<ul>
+<li><code>cd ~/app/backend</code></li>
+<li><code>bundle add rspec-rails shoulda-matchers --group &quot;development, test&quot;</code></li>
+<li><code>bundle install</code></li>
+<li><code>rails generate rspec:install</code></li>
+<li><strong>Request Spec:</strong> Create <code>backend/spec/requests/api/v1/health_controller_spec.rb</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ruby"><code><span class="line"><span style="color:#F97583">require</span><span style="color:#9ECBFF"> &#39;rails_helper&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">RSpec</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">describe</span><span style="color:#9ECBFF"> &quot;Health Endpoint&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">type:</span><span style="color:#79B8FF"> :request</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">  it </span><span style="color:#9ECBFF">&quot;returns OK&quot;</span><span style="color:#F97583"> do</span></span>
+<span class="line"><span style="color:#E1E4E8">    get </span><span style="color:#9ECBFF">&quot;/api/v1/up&quot;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">headers:</span><span style="color:#E1E4E8"> { </span><span style="color:#9ECBFF">&quot;ACCEPT&quot;</span><span style="color:#E1E4E8"> =&gt; </span><span style="color:#9ECBFF">&quot;application/json&quot;</span><span style="color:#E1E4E8"> }</span></span>
+<span class="line"><span style="color:#B392F0">    expect</span><span style="color:#E1E4E8">(response).</span><span style="color:#B392F0">to</span><span style="color:#B392F0"> have_http_status</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">:success</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">    expect</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">JSON</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(response.</span><span style="color:#B392F0">body</span><span style="color:#E1E4E8">)[</span><span style="color:#9ECBFF">&#39;status&#39;</span><span style="color:#E1E4E8">]).</span><span style="color:#B392F0">to</span><span style="color:#B392F0"> eq</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;OK&#39;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  end</span></span>
+<span class="line"><span style="color:#F97583">end</span></span></code></pre>
+<code>rspec</code></li>
+</ul>
+<h4 id="vitest-component-test-frontend">Vitest Component Test (Frontend)</h4>
+<ul>
+<li><code>cd ~/app/frontend</code></li>
+<li><code>npm i --save-dev @nuxt/test-utils vitest @vue/test-utils happy-dom playwright-core</code></li>
+<li>create <code>frontend/vitest.config.ts</code>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>import { defineVitestConfig } from &#39;@nuxt/test-utils/config&#39;</span></span>
+<span class="line"><span>export default defineVitestConfig({ })</span></span></code></pre>
+</li>
+<li><strong>Component Test:</strong> Create <code>tests/components/HomeContent.nuxt.spec.ts</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { mountSuspended } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;@nuxt/test-utils/runtime&#39;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { HomeContent } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;#components&#39;</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { expect, it, vi } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;vitest&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> mockResponse</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  healthStatus: </span><span style="color:#9ECBFF">&#39;OK&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">global.fetch </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> vi.</span><span style="color:#B392F0">fn</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">=&gt;</span></span>
+<span class="line"><span style="color:#79B8FF">  Promise</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">resolve</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#B392F0">    json</span><span style="color:#E1E4E8">: () </span><span style="color:#F97583">=&gt;</span><span style="color:#79B8FF"> Promise</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">resolve</span><span style="color:#E1E4E8">(mockResponse),</span></span>
+<span class="line"><span style="color:#E1E4E8">  }),</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">it</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;can mount some component&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> () </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  const</span><span style="color:#79B8FF"> component</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> mountSuspended</span><span style="color:#E1E4E8">(HomeContent)</span></span>
+<span class="line"><span style="color:#B392F0">  expect</span><span style="color:#E1E4E8">(component.</span><span style="color:#B392F0">text</span><span style="color:#E1E4E8">()).</span><span style="color:#B392F0">toMatchInlineSnapshot</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#9ECBFF">    &#39;&quot;Welcome to Our Minimal App!The backend says:&quot;&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">  )</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+<code>vitest tests/components</code></li>
+</ul>
+<h4 id="playwright-end-to-end-test">Playwright End-to-End Test</h4>
+<ul>
+<li><code>cd ~/app/frontend</code></li>
+<li><code>npm install @playwright/test pixelmatch playwright-expect</code></li>
+<li><code>npx playwright install</code></li>
+<li><strong>E2E Test:</strong> Create <code>tests/e2e/home.spec.ts</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="ts"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { test, expect } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> &#39;@playwright/test&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">test</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;homepage displays backend OK status&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">async</span><span style="color:#E1E4E8"> ({ </span><span style="color:#FFAB70">page</span><span style="color:#E1E4E8"> }) </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  await</span><span style="color:#E1E4E8"> page.</span><span style="color:#B392F0">goto</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;http://localhost:3001&#39;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">  await</span><span style="color:#B392F0"> expect</span><span style="color:#E1E4E8">(page.</span><span style="color:#B392F0">locator</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;p&#39;</span><span style="color:#E1E4E8">)).</span><span style="color:#B392F0">toContainText</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;&quot;status&quot;:&quot;OK&quot;&#39;</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">})</span></span></code></pre>
+</li>
+<li><code>cd ~/app/backend &amp;&amp; rails server</code></li>
+<li><code>cd ~/app/frontend &amp;&amp; npm run dev</code></li>
+<li><code>npx playwright test tests/e2e</code></li>
+</ul>
+<h3 id="4-circleci-integration">4. CircleCI Integration</h3>
+<ul>
+<li><code>cd ~/app</code></li>
+<li>create <code>.circleci/config.yml</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>version: 2.1</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>executors:</span></span>
+<span class="line"><span>  docker-executor:</span></span>
+<span class="line"><span>    docker:</span></span>
+<span class="line"><span>      - image: cimg/base:stable</span></span>
+<span class="line"><span>    working_directory: ~/app</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>jobs:</span></span>
+<span class="line"><span>  test:</span></span>
+<span class="line"><span>    executor: docker-executor</span></span>
+<span class="line"><span>    steps:</span></span>
+<span class="line"><span>      - checkout</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - setup_remote_docker:</span></span>
+<span class="line"><span>          docker_layer_caching: true</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Install Bundler 2.6.5</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            docker-compose -f docker-compose.ci.yml build --build-arg BUNDLER_VERSION=2.6.5</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Build and Start Services</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            docker-compose -f docker-compose.ci.yml up -d --build</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Wait for Backend to Be Ready</span></span>
+<span class="line"><span>          when: always</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            for i in {1..30}; do</span></span>
+<span class="line"><span>              echo &quot;Trying to hit backend from inside container...&quot;</span></span>
+<span class="line"><span>              if docker-compose -f docker-compose.ci.yml exec -T backend curl -s http://localhost:3000/api/v1/up | grep &#39;OK&#39;; then</span></span>
+<span class="line"><span>                echo &quot;<span role="img" aria-label="white heavy check mark">✅</span> Backend is ready!&quot;</span></span>
+<span class="line"><span>                exit 0</span></span>
+<span class="line"><span>              fi</span></span>
+<span class="line"><span>              echo &quot;Waiting for backend...&quot;</span></span>
+<span class="line"><span>              sleep 5</span></span>
+<span class="line"><span>            done</span></span>
+<span class="line"><span>            echo &quot;<span role="img" aria-label="cross mark">❌</span> Backend failed to start in time&quot;</span></span>
+<span class="line"><span>            docker-compose -f docker-compose.ci.yml logs backend || echo &quot;No logs found&quot;</span></span>
+<span class="line"><span>            touch backend_failed</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Inspect Backend Container</span></span>
+<span class="line"><span>          when: always</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            docker ps -a</span></span>
+<span class="line"><span>            echo &quot;------&quot;</span></span>
+<span class="line"><span>            docker-compose -f docker-compose.ci.yml logs backend || echo &quot;No logs found&quot;</span></span>
+<span class="line"><span>            echo &quot;------&quot;</span></span>
+<span class="line"><span>            docker-compose -f docker-compose.ci.yml exec backend ls -lah /app/log || echo &quot;Log dir not found&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Debug Backend Logs</span></span>
+<span class="line"><span>          when: always</span></span>
+<span class="line"><span>          command: docker-compose -f docker-compose.ci.yml logs backend || echo &quot;No logs found&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Tail Rails Test Log</span></span>
+<span class="line"><span>          when: always</span></span>
+<span class="line"><span>          command: docker-compose -f docker-compose.ci.yml exec backend sh -c &quot;cat log/test.log || echo &#39;log/test.log not found&#39;&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Backend Tests</span></span>
+<span class="line"><span>          command: docker-compose -f docker-compose.ci.yml exec backend bundle exec rspec</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Run Frontend Tests (Vitest + Playwright)</span></span>
+<span class="line"><span>          command: docker-compose -f docker-compose.ci.yml exec frontend sh -c &quot;npm run vitest -- --run tests/components &amp;&amp; npx playwright test tests/e2e&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Show Rails Logs (if needed)</span></span>
+<span class="line"><span>          when: always</span></span>
+<span class="line"><span>          command: docker-compose -f docker-compose.ci.yml logs backend || echo &quot;No logs found&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      - run:</span></span>
+<span class="line"><span>          name: Fail Job If Backend Died</span></span>
+<span class="line"><span>          command: |</span></span>
+<span class="line"><span>            if [ -f backend_failed ]; then</span></span>
+<span class="line"><span>              echo &quot;<span role="img" aria-label="cross mark">❌</span> Backend failed flag detected. Failing job.&quot;</span></span>
+<span class="line"><span>              exit 1</span></span>
+<span class="line"><span>            fi</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>workflows:</span></span>
+<span class="line"><span>  build_and_test:</span></span>
+<span class="line"><span>    jobs:</span></span>
+<span class="line"><span>      - test</span></span></code></pre>
+</li>
+<li>create <code>docker-compose.ci.yml</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>version: &#39;3.8&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>services:</span></span>
+<span class="line"><span>  postgres:</span></span>
+<span class="line"><span>    image: postgres:15</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      POSTGRES_USER: postgres</span></span>
+<span class="line"><span>      POSTGRES_PASSWORD: password</span></span>
+<span class="line"><span>      POSTGRES_DB: backend_test</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;5432:5432&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  backend:</span></span>
+<span class="line"><span>    build:</span></span>
+<span class="line"><span>      context: .</span></span>
+<span class="line"><span>      dockerfile: backend/Dockerfile.ci</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      RAILS_ENV: test</span></span>
+<span class="line"><span>      POSTGRES_USER: postgres</span></span>
+<span class="line"><span>      POSTGRES_PASSWORD: password</span></span>
+<span class="line"><span>      POSTGRES_DB: backend_test</span></span>
+<span class="line"><span>      POSTGRES_HOST: postgres</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      - postgres</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;3000:3000&quot;</span></span>
+<span class="line"><span>    command: &gt;</span></span>
+<span class="line"><span>      sh -c &quot;bundle exec rails db:prepare &amp;&amp; \</span></span>
+<span class="line"><span>            echo &#39;<span role="img" aria-label="white heavy check mark">✅</span> DB ready&#39; &amp;&amp; \</span></span>
+<span class="line"><span>            bundle exec rails server -b 0.0.0.0 -p 3000&quot;</span></span>
+<span class="line"><span>            # bundle exec rails server -b 0.0.0.0 -p 3000 || \</span></span>
+<span class="line"><span>            # (echo &#39;<span role="img" aria-label="cross mark">❌</span> Rails failed to boot, dumping log:&#39; &amp;&amp; tail -n 50 log/test.log)&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  frontend:</span></span>
+<span class="line"><span>    build:</span></span>
+<span class="line"><span>      context: .</span></span>
+<span class="line"><span>      dockerfile: frontend/Dockerfile.ci</span></span>
+<span class="line"><span>    environment:</span></span>
+<span class="line"><span>      NODE_ENV: test</span></span>
+<span class="line"><span>      CI: &quot;true&quot;</span></span>
+<span class="line"><span>      API_BASE: http://backend:3000/api/v1</span></span>
+<span class="line"><span>    depends_on:</span></span>
+<span class="line"><span>      - backend</span></span>
+<span class="line"><span>    ports:</span></span>
+<span class="line"><span>      - &quot;3001:3000&quot;</span></span>
+<span class="line"><span>    command: npm run dev</span></span></code></pre>
+</li>
+<li>create <code>backend/Dockerfile.ci</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># backend/Dockerfile.ci</span></span>
+<span class="line"><span># This is only for CircleCI testing, not Fly.io deployment</span></span>
+<span class="line"><span>ARG RUBY_VERSION=3.3.0</span></span>
+<span class="line"><span>ARG BUNDLER_VERSION=2.6.5</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>FROM ruby:${RUBY_VERSION}-slim</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Re-declare ARG before setting ENV</span></span>
+<span class="line"><span>ARG BUNDLER_VERSION</span></span>
+<span class="line"><span>ENV BUNDLER_VERSION=${BUNDLER_VERSION}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>WORKDIR /app</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install system dependencies</span></span>
+<span class="line"><span>RUN apt-get update -qq &amp;&amp; \</span></span>
+<span class="line"><span>  apt-get install --no-install-recommends -y \</span></span>
+<span class="line"><span>  build-essential \</span></span>
+<span class="line"><span>  libpq-dev \</span></span>
+<span class="line"><span>  libvips \</span></span>
+<span class="line"><span>  curl \</span></span>
+<span class="line"><span>  git \</span></span>
+<span class="line"><span>  libjemalloc2 \</span></span>
+<span class="line"><span>  &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install matching bundler version using ENV (not ARG directly)</span></span>
+<span class="line"><span>RUN gem install bundler -v &quot;$BUNDLER_VERSION&quot;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Copy over Gemfiles and install dependencies</span></span>
+<span class="line"><span>COPY backend/Gemfile backend/Gemfile.lock ./</span></span>
+<span class="line"><span>RUN bundle _&quot;$BUNDLER_VERSION&quot;_ install</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Copy backend app code</span></span>
+<span class="line"><span>COPY backend/ .</span></span></code></pre>
+</li>
+<li>create <code>frontend/Dockerfile.ci</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># frontend/Dockerf4ile.ci</span></span>
+<span class="line"><span># This is only for CircleCI testing, not Fly.io deployment</span></span>
+<span class="line"><span>FROM node:21.7.1-slim</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>WORKDIR /app</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install system dependencies for headless testing</span></span>
+<span class="line"><span>RUN apt-get update -qq &amp;&amp; apt-get install --no-install-recommends -y \</span></span>
+<span class="line"><span>  wget \</span></span>
+<span class="line"><span>  gnupg \</span></span>
+<span class="line"><span>  ca-certificates \</span></span>
+<span class="line"><span>  libnss3 \</span></span>
+<span class="line"><span>  libatk1.0-0 \</span></span>
+<span class="line"><span>  libatk-bridge2.0-0 \</span></span>
+<span class="line"><span>  libcups2 \</span></span>
+<span class="line"><span>  libdrm2 \</span></span>
+<span class="line"><span>  libxcomposite1 \</span></span>
+<span class="line"><span>  libxdamage1 \</span></span>
+<span class="line"><span>  libxrandr2 \</span></span>
+<span class="line"><span>  libgbm1 \</span></span>
+<span class="line"><span>  libasound2 \</span></span>
+<span class="line"><span>  libxshmfence1 \</span></span>
+<span class="line"><span>  libxfixes3 \</span></span>
+<span class="line"><span>  libxrender1 \</span></span>
+<span class="line"><span>  libxtst6 \</span></span>
+<span class="line"><span>  libxss1 \</span></span>
+<span class="line"><span>  xdg-utils \</span></span>
+<span class="line"><span>  fonts-liberation \</span></span>
+<span class="line"><span>  libgtk-3-0 \</span></span>
+<span class="line"><span>  libcurl4 \</span></span>
+<span class="line"><span>  python-is-python3 \</span></span>
+<span class="line"><span>  &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install dependencies</span></span>
+<span class="line"><span>COPY frontend/package*.json ./</span></span>
+<span class="line"><span>RUN npm ci</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install dev dependencies for Vitest and Playwright</span></span>
+<span class="line"><span>RUN npm install --save-dev @nuxt/test-utils vitest @vue/test-utils happy-dom playwright-core \</span></span>
+<span class="line"><span>  @playwright/test pixelmatch playwright-expect</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Copy app source code</span></span>
+<span class="line"><span>COPY frontend/ .</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Install Playwright browser dependencies</span></span>
+<span class="line"><span>RUN npx playwright install --with-deps</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span># Build Nuxt app</span></span>
+<span class="line"><span>RUN npm run build</span></span></code></pre>
+</li>
+<li><code>bundle add dotenv-rails --group &quot;development, test&quot;</code></li>
+<li><code>bundle install</code></li>
+<li>create <code>backend/.env</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>POSTGRES_HOST=localhost</span></span>
+<span class="line"><span>POSTGRES_USER=postgres</span></span>
+<span class="line"><span>POSTGRES_PASSWORD=password</span></span>
+<span class="line"><span>POSTGRES_DB=backend_test</span></span>
+<span class="line"><span>RAILS_ENV=test</span></span></code></pre>
+</li>
+<li>at the top of <code>backend/spec/rails_helper.rb</code>, add this:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>require &#39;dotenv/load&#39;</span></span></code></pre>
+</li>
+<li>also in <code>backend/spec/rails_helper.rb</code> right below <code>ENV[&#39;RAILS_ENV&#39;] ||= &#39;test&#39;</code>, add this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>ENV[&#39;POSTGRES_HOST&#39;] ||= &#39;postgres&#39;</span></span></code></pre>
+<ul>
+<li>
+<p>in <code>backend/Gemfile</code> on line 3, change <code>ruby &quot;3.3.0&quot;</code> to <code>ruby &quot;~&gt; 3.3&quot;</code></p>
+</li>
+<li>
+<p>in <code>backend/config/database.yml</code>, change the <code>test</code> section to:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>test:</span></span>
+<span class="line"><span>  &lt;&lt;: *default</span></span>
+<span class="line"><span>  database: backend_test</span></span>
+<span class="line"><span>  host: &lt;%= ENV.fetch(&quot;POSTGRES_HOST&quot;, &quot;postgres&quot;) %&gt;</span></span>
+<span class="line"><span>  username: &lt;%= ENV.fetch(&quot;POSTGRES_USER&quot;, &quot;postgres&quot;) %&gt;</span></span>
+<span class="line"><span>  password: &lt;%= ENV.fetch(&quot;POSTGRES_PASSWORD&quot;, &quot;password&quot;) %&gt;</span></span>
+<span class="line"><span>  port: 5432</span></span></code></pre>
+</li>
+<li>
+<p>in <code>frontend/package.json</code>, add this to the <code>scripts</code> section: <code>&quot;vitest&quot;: &quot;vitest&quot;,</code></p>
+</li>
+<li>
+<p>edit your <code>frontend/nuxt.config.ts</code> to this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>const isCI = process.env.CI === &#39;true&#39;</span></span>
+<span class="line"><span>const isDev = process.env.NODE_ENV !== &#39;production&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineNuxtConfig({</span></span>
+<span class="line"><span>  devServer: { port: 3001 },</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  modules: [</span></span>
+<span class="line"><span>    &#39;@nuxt/eslint&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/fonts&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/icon&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/image&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/test-utils&#39;</span></span>
+<span class="line"><span>  ],</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  runtimeConfig: {</span></span>
+<span class="line"><span>    public: {</span></span>
+<span class="line"><span>      apiBase: isCI</span></span>
+<span class="line"><span>        ? &#39;http://backend:3000/api/v1&#39;</span></span>
+<span class="line"><span>        : isDev</span></span>
+<span class="line"><span>          ? &#39;http://localhost:3000/api/v1&#39;</span></span>
+<span class="line"><span>          : &#39;https://app001-backend.fly.dev/api/v1&#39;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  },</span></span>
+<span class="line"><span>});</span></span></code></pre>
+</li>
+<li>
+<p><code>cd ~/app</code></p>
+</li>
+<li>
+<p><code>echo &quot;.DS_Store\n.secrets\n.env&quot; &gt; .gitignore</code></p>
+</li>
+<li>
+<p><code>git init</code></p>
+</li>
+<li>
+<p><code>git add .</code></p>
+</li>
+<li>
+<p><code>git commit -m &quot;Init app&quot;</code></p>
+</li>
+<li>
+<p>create an empty repo on github and note the git url (something like <a href="https://github.com/mark-mcdermott/rails-nuxt-flyio-circleci-mvp-app.git">https://github.com/mark-mcdermott/rails-nuxt-flyio-circleci-mvp-app.git</a>)</p>
+</li>
+<li>
+<p><code>git remote add origin &lt;git url&gt;</code></p>
+</li>
+<li>
+<p><code>git push --set-upstream origin main</code></p>
+</li>
+<li>
+<p>go to your CircleCI projects page (something like <code>https://app.circleci.com/projects/project-dashboard/github/mark-mcdermott/</code>)</p>
+</li>
+<li>
+<p>next to repo name (<code>drivetracks-wip-nuxt3-rework</code>), click Set Up Project</p>
+</li>
+<li>
+<p>click <code>Fastest</code> -&gt; <code>main</code> -&gt; <code>Set Up Project</code></p>
+</li>
+<li>
+<p>CI frontend/backend tests should pass <span role="img" aria-label="party popper">🎉</span></p>
+</li>
+<li>
+<p><strong>Double Check Local Tests Stil Pass:</strong></p>
+</li>
+<li>
+<p><code>cd ~/app/backend &amp;&amp; rspec</code> &lt;— rspec tests should pass locally <span role="img" aria-label="party popper">🎉</span></p>
+</li>
+<li>
+<p><code>cd ~/app/frontend &amp;&amp; vitest tests/components</code> &lt;— vitest tests should pass locally <span role="img" aria-label="party popper">🎉</span></p>
+</li>
+<li>
+<p><code>cd ~/app/backend &amp;&amp; rails server</code></p>
+</li>
+<li>
+<p><code>cd ~/app/frontend &amp;&amp; npm run dev</code></p>
+</li>
+<li>
+<p><code>cd ~/app/frontend &amp;&amp; npx playwright test tests/e2e</code> &lt;— playwright tests should pass locally <span role="img" aria-label="party popper">🎉</span></p>
+</li>
+</ul>
+<h3 id="5-production-deployment">5. Production Deployment</h3>
+<ul>
+<li>
+<p><strong>Redeploy:</strong><br/>
+Once tests pass locally and in CircleCI, deploy the backend and frontend to fly.io.</p>
+</li>
+<li>
+<p><code>cd ~/app/backend</code></p>
+</li>
+<li>
+<p><code>fly deploy</code></p>
+</li>
+<li>
+<p><code>cd ../frontend</code></p>
+</li>
+<li>
+<p><code>fly deploy</code></p>
+</li>
+<li>
+<p><strong>Verification:</strong><br/>
+Visit the frontend prod URL to verify that the page displays the <code>{ &quot;status&quot;: &quot;OK&quot; }</code> response from the backend.</p>
+</li>
+</ul>
+<h2 id="part-ii-auth">Part II: Auth</h2>
+<h3 id="1-install-and-configure-devise-with-jwt-and-sidebase-auth">1. <strong>Install and Configure Devise with JWT and Sidebase Auth</strong></h3>
+<ul>
+<li>
+<p><strong>Install Dependencies</strong></p>
+</li>
+<li>
+<p><code>cd ~/app/backend</code></p>
+</li>
+<li>
+<p><code>rails db:create</code> (or <code>rails db:drop db:create</code> if already exists)</p>
+</li>
+<li>
+<p><code>bundle add devise devise-jwt jsonapi-serializer</code></p>
+</li>
+<li>
+<p><code>bundle install</code></p>
+</li>
+<li>
+<p><code>rails generate devise:install</code></p>
+</li>
+<li>
+<p><strong>Devise Configuration</strong></p>
+</li>
+<li>
+<p>In config/environments/development.rb:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>config.action_mailer.default_url_options = { host: &#39;localhost&#39;, port: 3000 }</span></span></code></pre>
+</li>
+<li>
+<p>In <code>config/initializers/devise.rb</code>, uncomment and change the line:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>config.navigational_formats = []</span></span></code></pre>
+</li>
+<li>
+<p>In <code>config/application.rb</code>, add session store and middleware:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>config.session_store :cookie_store, key: &#39;_interslice_session&#39;</span></span>
+<span class="line"><span>config.middleware.use ActionDispatch::Cookies</span></span>
+<span class="line"><span>config.middleware.use config.session_store, config.session_options</span></span></code></pre>
+<p><strong>Test</strong></p>
+</li>
+<li>
+<p>Verify if Devise is working by checking if the views are generated:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails generate devise:views</span></span></code></pre>
+</li>
+</ul>
+<h3 id="2-create-user-model-with-devise--jwt">2. <strong>Create User Model with Devise &amp; JWT</strong></h3>
+<ul>
+<li>
+<p><code>rails g migration EnableUuid</code></p>
+</li>
+<li>
+<p>In <code>db/migrate/&lt;timestamp&gt;_enable_uuuid.rb</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>enable_extension &#39;pgcrypto&#39;</span></span></code></pre>
+</li>
+<li>
+<p><code>rails db:migrate</code></p>
+</li>
+<li>
+<p>Generate User model with Devise:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails generate devise User</span></span></code></pre>
+</li>
+<li>
+<p>In <code>db/migrate/&lt;timestamp&gt;_devise_create_users.rb</code>, add:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>t.boolean :admin, default: false</span></span>
+<span class="line"><span>t.uuid :uuid, index: { unique: true }</span></span></code></pre>
+</li>
+<li>
+<p><code>rails db:migrate</code></p>
+</li>
+<li>
+<p>Install Factory Bot:</p>
+<ul>
+<li><code>bundle add factory_bot_rails --group &quot;development, test&quot;</code></li>
+<li><code>bundle install</code></li>
+</ul>
+</li>
+<li>
+<p>Factory for User Model:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>mkdir spec/factories</span></span>
+<span class="line"><span>touch spec/factories/users.rb</span></span></code></pre>
+</li>
+<li>
+<p>In spec/factories/users.rb:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>FactoryBot.define do</span></span>
+<span class="line"><span>  factory :user do</span></span>
+<span class="line"><span>    sequence(:email) { |n| &quot;test#{n}@mail.com&quot; }</span></span>
+<span class="line"><span>    password { &#39;password&#39; }</span></span>
+<span class="line"><span>    trait :confirmed do</span></span>
+<span class="line"><span>      confirmed_at { Time.zone.now }</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+<p><strong>Test</strong></p>
+</li>
+<li>
+<p>Test if users can be created:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails console</span></span>
+<span class="line"><span>include FactoryBot::Syntax::Methods</span></span>
+<span class="line"><span>FactoryBot.create(:user)</span></span></code></pre>
+</li>
+</ul>
+<h3 id="3-create-registration-and-login-endpoints">3. <strong>Create Registration and Login Endpoints</strong></h3>
+<ul>
+<li>
+<p>Generate Controllers:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails g devise:controllers api/v1/auth -c sessions registrations</span></span></code></pre>
+</li>
+<li>
+<p>Edit <code>config/routes.rb</code> to look like this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>Rails.application.routes.draw do</span></span>
+<span class="line"><span>  devise_for :users, path: &#39;&#39;, path_names: {</span></span>
+<span class="line"><span>    sign_in: &#39;api/v1/auth/login&#39;,</span></span>
+<span class="line"><span>    sign_out: &#39;api/v1/auth/logout&#39;,</span></span>
+<span class="line"><span>    registration: &#39;api/v1/auth/signup&#39;</span></span>
+<span class="line"><span>  }, controllers: {</span></span>
+<span class="line"><span>    sessions: &#39;api/v1/auth/sessions&#39;,</span></span>
+<span class="line"><span>    registrations: &#39;api/v1/auth/registrations&#39;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  namespace :api do</span></span>
+<span class="line"><span>    namespace :v1 do</span></span>
+<span class="line"><span>      get &#39;up&#39;, to: &#39;health#show&#39;</span></span>
+<span class="line"><span>      namespace :auth do</span></span>
+<span class="line"><span>      get &#39;login&#39;, to: &#39;sessions#create&#39; </span></span>
+<span class="line"><span>      get &#39;signup&#39;, to: &#39;registrations#create&#39;</span></span>
+<span class="line"><span>      get &#39;logout&#39;, to: &#39;sessions#destroy&#39;</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+<p><strong>Test</strong></p>
+</li>
+<li>
+<p>Ensure routes for login, logout, and signup are working:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails routes | grep auth</span></span></code></pre>
+</li>
+</ul>
+<h3 id="4-jwt-configuration">4. <strong>JWT Configuration</strong></h3>
+<ul>
+<li>
+<p>JWT Setup in devise.rb (<code>initializers/devise.rb</code>). This goes <em>before</em> the final <code>end</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>config.jwt do |jwt|</span></span>
+<span class="line"><span>  jwt.secret = ENV[&#39;SECRET_KEY_BASE&#39;] || &#39;dummy_secret_key_for_tests&#39;</span></span>
+<span class="line"><span>  jwt.dispatch_requests = [</span></span>
+<span class="line"><span>    [&#39;POST&#39;, %r{^/api/v1/auth/login$}]</span></span>
+<span class="line"><span>  ]</span></span>
+<span class="line"><span>  jwt.revocation_requests = [</span></span>
+<span class="line"><span>    [&#39;DELETE&#39;, %r{^/api/v1/auth/logout$}]</span></span>
+<span class="line"><span>  ]</span></span>
+<span class="line"><span>  jwt.expiration_time = 30.minutes.to_i</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>
+<p>Migration to Add JWT Field:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails g migration addJtiToUsers jti:string:index:unique</span></span></code></pre>
+</li>
+<li>
+<p>In <code>db/migrate/&lt;timestamp&gt;_add_jti_to_users.rb</code> replace the <code>add_column</code> and <code>add_index</code> lines with this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>add_column :users, :jti, :string, null: false</span></span>
+<span class="line"><span>add_index :users, :jti, unique: true</span></span></code></pre>
+</li>
+<li>
+<p><code>rails db:migrate</code></p>
+</li>
+<li>
+<p><strong>User Model with JWT</strong></p>
+</li>
+<li>
+<p>In app/models/user.rb:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class User &lt; ApplicationRecord</span></span>
+<span class="line"><span>  include Devise::JWT::RevocationStrategies::JTIMatcher</span></span>
+<span class="line"><span>  devise :database_authenticatable, :registerable,</span></span>
+<span class="line"><span>        :recoverable, :rememberable, :validatable,</span></span>
+<span class="line"><span>        :jwt_authenticatable, jwt_revocation_strategy: self</span></span>
+<span class="line"><span>  before_create :set_uuid</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  private</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  def set_uuid</span></span>
+<span class="line"><span>    self.uuid = SecureRandom.uuid if uuid.blank?</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>Check if users have a jti field:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails console</span></span>
+<span class="line"><span>user = User.create!(email: &#39;test@mail.com&#39;, password: &#39;password&#39;)</span></span>
+<span class="line"><span>user = User.find_by(email: &quot;test@mail.com&quot;)</span></span>
+<span class="line"><span>user.jti</span></span></code></pre>
+</li>
+</ul>
+<h3 id="5-session-controller-for-login">5. <strong>Session Controller for Login</strong></h3>
+<ul>
+<li>Create Sessions Controller:
+<ul>
+<li>In <code>app/controllers/api/v1/auth/sessions_controller.rb</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class Api::V1::Auth::SessionsController &lt; ApplicationController</span></span>
+<span class="line"><span>  def create</span></span>
+<span class="line"><span>    user = User.find_by(email: params[:user][:email])</span></span>
+<span class="line"><span>    if user&amp;.valid_password?(params[:user][:password])</span></span>
+<span class="line"><span>      token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first</span></span>
+<span class="line"><span>      render json: { token: token, status: { code: 200, message: &#39;Logged in successfully.&#39; } }</span></span>
+<span class="line"><span>    else</span></span>
+<span class="line"><span>      render json: { status: 401, message: &#39;Invalid email or password.&#39; }, status: :unauthorized</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>Test login endpoint with <code>curl</code> by posting the user credentials:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>curl -X POST http://localhost:3000/api/v1/auth/login \</span></span>
+<span class="line"><span>  -H &quot;Content-Type: application/json&quot; \</span></span>
+<span class="line"><span>  -d &#39;{&quot;user&quot;: {&quot;email&quot;: &quot;test@mail.com&quot;, &quot;password&quot;: &quot;password&quot;}}&#39;</span></span></code></pre>
+</li>
+</ul>
+<h3 id="6-registration-controller">6. <strong>Registration Controller</strong></h3>
+<ul>
+<li>Create Registration Controller:
+<ul>
+<li>In <code>app/controllers/api/v1/auth/registrations_controller.rb</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class Api::V1::Auth::RegistrationsController &lt; Devise::RegistrationsController</span></span>
+<span class="line"><span>  respond_to :json</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  def create</span></span>
+<span class="line"><span>    user = User.new(user_params)</span></span>
+<span class="line"><span>    if user.save</span></span>
+<span class="line"><span>      render json: { status: { code: 200, message: &quot;Signed up successfully.&quot; }, data: UserSerializer.new(user).serializable_hash[:data][:attributes] }</span></span>
+<span class="line"><span>    else</span></span>
+<span class="line"><span>      render json: { status: 422, message: user.errors.full_messages.to_sentence }, status: :unprocessable_entity</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  private</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  def user_params</span></span>
+<span class="line"><span>    params.require(:user).permit(:email, :password)</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Add the user serializer:
+<ul>
+<li>Create <code>backend/app/serializers/user_serializer.rb</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># app/serializers/user_serializer.rb</span></span>
+<span class="line"><span>class UserSerializer</span></span>
+<span class="line"><span>  include JSONAPI::Serializer</span></span>
+<span class="line"><span>  attributes :email, :uuid, :admin</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>Test the registration with <code>curl</code> by sending POST requests with valid user data:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>curl -X POST http://localhost:3000/api/v1/auth/signup \</span></span>
+<span class="line"><span>  -H &quot;Content-Type: application/json&quot; \</span></span>
+<span class="line"><span>  -d &#39;{&quot;user&quot;: {&quot;email&quot;: &quot;newuser@mail.com&quot;, &quot;password&quot;: &quot;password&quot;}}&#39;</span></span></code></pre>
+</li>
+</ul>
+<h3 id="7-current-user-endpoint">7. <strong>Current User Endpoint</strong></h3>
+<ul>
+<li>Create Current User Controller:
+<ul>
+<li>In <code>app/controllers/api/v1/auth/current_user_controller.rb</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class Api::V1::Auth::CurrentUserController &lt; ApplicationController</span></span>
+<span class="line"><span>  before_action :authenticate_user!</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  def index</span></span>
+<span class="line"><span>    render json: current_user.slice(:id, :email)</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>Edit <code>config/routes.rb</code> to look like this:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>Rails.application.routes.draw do</span></span>
+<span class="line"><span>  devise_for :users, path: &#39;&#39;, path_names: {</span></span>
+<span class="line"><span>    sign_in: &#39;api/v1/auth/login&#39;,</span></span>
+<span class="line"><span>    sign_out: &#39;api/v1/auth/logout&#39;,</span></span>
+<span class="line"><span>    registration: &#39;api/v1/auth/signup&#39;</span></span>
+<span class="line"><span>  }, controllers: {</span></span>
+<span class="line"><span>    sessions: &#39;api/v1/auth/sessions&#39;,</span></span>
+<span class="line"><span>    registrations: &#39;api/v1/auth/registrations&#39;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  namespace :api do</span></span>
+<span class="line"><span>    namespace :v1 do</span></span>
+<span class="line"><span>      get &#39;up&#39;, to: &#39;health#show&#39;</span></span>
+<span class="line"><span>      namespace :auth do</span></span>
+<span class="line"><span>      get &#39;login&#39;, to: &#39;sessions#create&#39; </span></span>
+<span class="line"><span>      get &#39;signup&#39;, to: &#39;registrations#create&#39;</span></span>
+<span class="line"><span>      get &#39;logout&#39;, to: &#39;sessions#destroy&#39;</span></span>
+<span class="line"><span>      get &#39;current_user&#39;, to: &#39;current_user#index&#39;</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>    end</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>Test the current user endpoint by sending a <code>GET</code> request with a valid token:
+<ul>
+<li>First login and copy the returned token:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>curl -X POST http://localhost:3000/api/v1/auth/login \</span></span>
+<span class="line"><span>-H &quot;Content-Type: application/json&quot; \</span></span>
+<span class="line"><span>-d &#39;{&quot;user&quot;: {&quot;email&quot;: &quot;test@mail.com&quot;, &quot;password&quot;: &quot;password&quot;}}&#39;</span></span></code></pre>
+<ul>
+<li>Then paste your token in place of the <code>&lt;your_jwt_token&gt;</code> here and run this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>curl -X GET http://localhost:3000/api/v1/auth/current_user \</span></span>
+<span class="line"><span>-H &quot;Authorization: Bearer &lt;your_jwt_token&gt;&quot;</span></span></code></pre>
+</li>
+</ul>
+<h3 id="8-user-seeds-and-production-deployment">8. <strong>User Seeds and Production Deployment</strong></h3>
+<ul>
+<li>User Seeding:
+<ul>
+<li>In db/seeds.rb:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>User.create!(email: &#39;test@mail.com&#39;, password: &#39;password&#39;, admin: true)</span></span>
+<span class="line"><span>User.create!(email: &#39;test2@mail.com&#39;, password: &#39;password&#39;)</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>Test seeding:
+<ul>
+<li>First reset the database:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails db:drop db:create db:migrate</span></span></code></pre>
+<ul>
+<li>Then run the seeds:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails db:seed</span></span></code></pre>
+<ul>
+<li>Then check the seeds:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails console</span></span>
+<span class="line"><span>User.all</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Deploy Backend to Fly.io</strong></p>
+<ul>
+<li><code>cd ~/app/backend</code></li>
+<li><code>fly deploy</code></li>
+</ul>
+<h3 id="9-setup-frontend-auth">9. Setup Frontend Auth</h3>
+<ul>
+<li><code>cd ~/app/frontend</code></li>
+<li>Create <code>frontend/composables/useAuth.ts</code>:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>import { ref, computed } from &#39;vue&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const token = ref(null)</span></span>
+<span class="line"><span>const user = ref(null)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export const useAuth = () =&gt; {</span></span>
+<span class="line"><span>  const login = async (email: string, password: string) =&gt; {</span></span>
+<span class="line"><span>    try {</span></span>
+<span class="line"><span>      const res = await $fetch(&#39;/auth/login&#39;, {</span></span>
+<span class="line"><span>        method: &#39;POST&#39;,</span></span>
+<span class="line"><span>        baseURL: useRuntimeConfig().public.apiBase,</span></span>
+<span class="line"><span>        body: { user: { email, password } },</span></span>
+<span class="line"><span>      })</span></span>
+<span class="line"><span>      token.value = res.token</span></span>
+<span class="line"><span>      localStorage.setItem(&#39;token&#39;, res.token)</span></span>
+<span class="line"><span>      await fetchCurrentUser()</span></span>
+<span class="line"><span>      return true</span></span>
+<span class="line"><span>    } catch (err) {</span></span>
+<span class="line"><span>      console.error(&#39;Login failed&#39;, err)</span></span>
+<span class="line"><span>      return false</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  const logout = () =&gt; {</span></span>
+<span class="line"><span>    token.value = null</span></span>
+<span class="line"><span>    user.value = null</span></span>
+<span class="line"><span>    localStorage.removeItem(&#39;token&#39;)</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  const fetchCurrentUser = async () =&gt; {</span></span>
+<span class="line"><span>    if (!token.value) return null</span></span>
+<span class="line"><span>    try {</span></span>
+<span class="line"><span>      console.log(&#39;Fetching user...&#39;)</span></span>
+<span class="line"><span>      const res = await $fetch(&#39;/auth/current_user&#39;, {</span></span>
+<span class="line"><span>        baseURL: useRuntimeConfig().public.apiBase,</span></span>
+<span class="line"><span>        headers: {</span></span>
+<span class="line"><span>          Authorization: `Bearer ${token.value}`</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>      })</span></span>
+<span class="line"><span>      console.log(&#39;Fetched user:&#39;, res)</span></span>
+<span class="line"><span>      user.value = res</span></span>
+<span class="line"><span>    } catch (err) {</span></span>
+<span class="line"><span>      console.error(&#39;Failed to fetch current user&#39;, err)</span></span>
+<span class="line"><span>      logout()</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  const status = computed(() =&gt; {</span></span>
+<span class="line"><span>    return token.value ? &#39;authenticated&#39; : &#39;guest&#39;</span></span>
+<span class="line"><span>  })</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  onMounted(() =&gt; {</span></span>
+<span class="line"><span>    const savedToken = localStorage.getItem(&#39;token&#39;)</span></span>
+<span class="line"><span>    if (savedToken) {</span></span>
+<span class="line"><span>      console.log(&#39;client token:&#39;, savedToken)</span></span>
+<span class="line"><span>      token.value = savedToken</span></span>
+<span class="line"><span>      fetchCurrentUser()</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  })</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  return { token, user, login, logout, fetchCurrentUser, status }</span></span>
+<span class="line"><span>}</span></span></code></pre>
+</li>
+</ul>
+<ol start="10">
+<li>Add Index/Login/Signup/Private Pages</li>
+</ol>
+<ul>
+<li>
+<p>Create <code>pages/index.vue</code></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div&gt;</span></span>
+<span class="line"><span>    &lt;h1&gt;Welcome&lt;/h1&gt;</span></span>
+<span class="line"><span>    &lt;blockquote class=&quot;blockquote blockquote--highlight&quot;&gt;</span></span>
+<span class="line"><span>      &lt;p&gt;That&#39;s good thinking there, Cool Breeze.&lt;/p&gt;</span></span>
+<span class="line"><span>    &lt;/blockquote&gt;</span></span>
+<span class="line"><span>    &lt;p&gt;</span></span>
+<span class="line"><span>      Cool Breeze is a kid with three or four days&#39; beard</span></span>
+<span class="line"><span>      sitting next to me on the stamped metal bottom of the</span></span>
+<span class="line"><span>      open back part of a pickup truck. Bouncing along.</span></span>
+<span class="line"><span>      Dipping and rising and rolling on these rotten springs</span></span>
+<span class="line"><span>      like a boat. Out the back of the truck the city of San </span></span>
+<span class="line"><span>      Francisco is bouncing down the hill, all those endless</span></span>
+<span class="line"><span>      staggers of bay windows, slums with a view, bouncing</span></span>
+<span class="line"><span>      and streaming down the hill. One after another, electric</span></span>
+<span class="line"><span>      signs with neon martini glasses lit up on them, the San</span></span>
+<span class="line"><span>      Francisco symbol of &quot;bar&quot;—thousands of neon-magenta</span></span>
+<span class="line"><span>      martini glasses bouncing and streaming down the hill,</span></span>
+<span class="line"><span>      and beneath them hundreds, thousands of people</span></span>
+<span class="line"><span>      wheeling around to look at this freaking crazed truck</span></span>
+<span class="line"><span>      we&#39;re in, their white faces erupting from their lapels</span></span>
+<span class="line"><span>      like marshmallows—streaming and bouncing down the</span></span>
+<span class="line"><span>      hill—and God knows they&#39;ve got plenty to look at.</span></span>
+<span class="line"><span>      The acid tests are in full swing, and you&#39;re about to be part of something &lt;em&gt;truly radical&lt;/em&gt;.</span></span>
+<span class="line"><span>    &lt;/p&gt;</span></span>
+<span class="line"><span>    &lt;NuxtLink class=&quot;button&quot; to=&quot;/signup&quot;&gt;Join the Trip&lt;/NuxtLink&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Create <code>pages/login.vue</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div&gt;</span></span>
+<span class="line"><span>    &lt;h1&gt;Login&lt;/h1&gt;</span></span>
+<span class="line"><span>    &lt;form class=&quot;form&quot; @submit.prevent=&quot;onSubmit&quot;&gt;</span></span>
+<span class="line"><span>      &lt;label class=&quot;form__label&quot; for=&quot;email&quot;&gt;Email&lt;/label&gt;</span></span>
+<span class="line"><span>      &lt;input id=&quot;email&quot; v-model=&quot;email&quot; class=&quot;form__input&quot; type=&quot;text&quot; placeholder=&quot;Your email&quot; &gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      &lt;label class=&quot;form__label&quot; for=&quot;password&quot;&gt;Password&lt;/label&gt;</span></span>
+<span class="line"><span>      &lt;input id=&quot;password&quot; v-model=&quot;password&quot; class=&quot;form__input&quot; type=&quot;password&quot; placeholder=&quot;Your password&quot; &gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      &lt;button type=&quot;submit&quot; class=&quot;button&quot;&gt;Log In&lt;/button&gt;</span></span>
+<span class="line"><span>    &lt;/form&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;script setup&gt;</span></span>
+<span class="line"><span>import { ref } from &#39;vue&#39;</span></span>
+<span class="line"><span>import { useAuth } from &#39;~/composables/useAuth&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const email = ref(&#39;&#39;)</span></span>
+<span class="line"><span>const password = ref(&#39;&#39;)</span></span>
+<span class="line"><span>const { login } = useAuth()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const onSubmit = async () =&gt; {</span></span>
+<span class="line"><span>  const success = await login(email.value, password.value)</span></span>
+<span class="line"><span>  if (success) {</span></span>
+<span class="line"><span>    navigateTo(&#39;/private&#39;)</span></span>
+<span class="line"><span>  } else {</span></span>
+<span class="line"><span>    alert(&#39;Login failed&#39;)</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>&lt;/script&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Create <code>pages/signup.vue</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div&gt;</span></span>
+<span class="line"><span>    &lt;h1&gt;Register&lt;/h1&gt;</span></span>
+<span class="line"><span>    &lt;form class=&quot;form&quot; @submit.prevent=&quot;register&quot;&gt;</span></span>
+<span class="line"><span>      &lt;label class=&quot;form__label&quot; for=&quot;email&quot;&gt;Email&lt;/label&gt;</span></span>
+<span class="line"><span>      &lt;input id=&quot;email&quot; v-model=&quot;email&quot; class=&quot;form__input&quot; type=&quot;text&quot; placeholder=&quot;Your email&quot; &gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      &lt;label class=&quot;form__label&quot; for=&quot;password&quot;&gt;Email&lt;/label&gt;</span></span>
+<span class="line"><span>      &lt;input id=&quot;password&quot; v-model=&quot;password&quot; class=&quot;form__input&quot; type=&quot;password&quot; placeholder=&quot;Your password&quot; &gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      &lt;button type=&quot;submit&quot; class=&quot;button&quot;&gt;Sign Up&lt;/button&gt;</span></span>
+<span class="line"><span>    &lt;/form&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;script setup&gt;</span></span>
+<span class="line"><span>import { ref } from &#39;vue&#39;</span></span>
+<span class="line"><span>import { useAuth } from &#39;~/composables/useAuth&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const email = ref(&#39;&#39;)</span></span>
+<span class="line"><span>const password = ref(&#39;&#39;)</span></span>
+<span class="line"><span>const { login } = useAuth()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const register = async () =&gt; {</span></span>
+<span class="line"><span>  try {</span></span>
+<span class="line"><span>    await $fetch(&#39;/auth/signup&#39;, {</span></span>
+<span class="line"><span>      method: &#39;POST&#39;,</span></span>
+<span class="line"><span>      baseURL: useRuntimeConfig().public.apiBase,</span></span>
+<span class="line"><span>      body: { user: { email: email.value, password: password.value } }</span></span>
+<span class="line"><span>    })</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    const success = await login(email.value, password.value)</span></span>
+<span class="line"><span>    if (success) {</span></span>
+<span class="line"><span>      navigateTo(&#39;/&#39;)</span></span>
+<span class="line"><span>    } else {</span></span>
+<span class="line"><span>      alert(&#39;Registered but login failed <span role="img" aria-label aria-hidden="true">🤷‍♂️</span>&#39;)</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  } catch (err) {</span></span>
+<span class="line"><span>    alert(&#39;Signup failed&#39;)</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>&lt;/script&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Create <code>pages/private.vue</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div&gt;</span></span>
+<span class="line"><span>    &lt;h1&gt;Private&lt;/h1&gt;</span></span>
+<span class="line"><span>    &lt;blockquote class=&quot;blockquote blockquote--highlight&quot;&gt;</span></span>
+<span class="line"><span>      &lt;p&gt;&quot;Jack&amp;mdash;&quot;&lt;/p&gt;</span></span>
+<span class="line"><span>    &lt;/blockquote&gt;</span></span>
+<span class="line"><span>    &lt;p&gt;</span></span>
+<span class="line"><span>      And Frenchy hunkers down on the floor and</span></span>
+<span class="line"><span>      opens the cheese spread and pulls the knife out of the</span></span>
+<span class="line"><span>      scabbard and sinks the blade into it. Quite a blade! a</span></span>
+<span class="line"><span>      foot long and engraved with Chinese demons. He wipes</span></span>
+<span class="line"><span>      gobs of cheese spread onto his tongue with the blade.</span></span>
+<span class="line"><span>      Sandra sits silent in a clump, grooving on the full life.</span></span>
+<span class="line"><span>      Jack raps on about perfidy in high places . . .</span></span>
+<span class="line"><span>    &lt;/p&gt;</span></span>
+<span class="line"><span>    &lt;NuxtLink class=&quot;button&quot; to=&quot;/signup&quot;&gt;Join the Trip&lt;/NuxtLink&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Create <code>components/HeaderNav.vue</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;script setup&gt;</span></span>
+<span class="line"><span>import { useAuth } from &#39;~/composables/useAuth&#39;</span></span>
+<span class="line"><span>import { useRouter } from &#39;vue-router&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const { logout, status, user, fetchCurrentUser } = useAuth()</span></span>
+<span class="line"><span>const router = useRouter()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>onMounted(() =&gt; {</span></span>
+<span class="line"><span>  if (status.value === &#39;authenticated&#39; &amp;&amp; !user.value) {</span></span>
+<span class="line"><span>    fetchCurrentUser()</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  console.log(&#39;client token:&#39;, localStorage.getItem(&#39;token&#39;))</span></span>
+<span class="line"><span>  console.log(&#39;auth status:&#39;, status.value)</span></span>
+<span class="line"><span>  console.log(&#39;user:&#39;, user.value)</span></span>
+<span class="line"><span>})</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const handleLogout = () =&gt; {</span></span>
+<span class="line"><span>  logout()</span></span>
+<span class="line"><span>  router.push(&#39;/&#39;)</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>if (import.meta.client) {</span></span>
+<span class="line"><span>  watch(user, () =&gt; {</span></span>
+<span class="line"><span>    console.log(&#39;<span role="img" aria-label aria-hidden="true">🧠</span> User updated:&#39;, user.value)</span></span>
+<span class="line"><span>  })</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>&lt;/script&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div&gt;</span></span>
+<span class="line"><span>    &lt;nav&gt;</span></span>
+<span class="line"><span>      &lt;ul&gt;</span></span>
+<span class="line"><span>        &lt;li&gt;&lt;NuxtLink to=&quot;/&quot;&gt;&lt;Icon class=&quot;logo&quot; name=&quot;gg:pacman&quot; /&gt;&lt;/NuxtLink&gt;&lt;/li&gt;</span></span>
+<span class="line"><span>        &lt;li&gt;&lt;NuxtLink to=&quot;/&quot;&gt;Home&lt;/NuxtLink&gt;&lt;/li&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>        &lt;ClientOnly fallback=&quot; &quot;&gt;</span></span>
+<span class="line"><span>          &lt;li v-if=&quot;status === &#39;authenticated&#39;&quot;&gt;</span></span>
+<span class="line"><span>            &lt;NuxtLink to=&quot;/private&quot;&gt;Private&lt;/NuxtLink&gt;</span></span>
+<span class="line"><span>          &lt;/li&gt;</span></span>
+<span class="line"><span>          &lt;li v-if=&quot;status === &#39;guest&#39;&quot;&gt;</span></span>
+<span class="line"><span>            &lt;NuxtLink to=&quot;/login&quot;&gt;Login&lt;/NuxtLink&gt;</span></span>
+<span class="line"><span>          &lt;/li&gt;</span></span>
+<span class="line"><span>          &lt;li v-if=&quot;status === &#39;guest&#39;&quot;&gt;</span></span>
+<span class="line"><span>            &lt;NuxtLink to=&quot;/signup&quot;&gt;Register&lt;/NuxtLink&gt;</span></span>
+<span class="line"><span>          &lt;/li&gt;</span></span>
+<span class="line"><span>          &lt;li v-if=&quot;status === &#39;authenticated&#39;&quot;&gt;</span></span>
+<span class="line"><span>            &lt;button @click=&quot;handleLogout&quot;&gt;Logout&lt;/button&gt;</span></span>
+<span class="line"><span>          &lt;/li&gt;</span></span>
+<span class="line"><span>        &lt;/ClientOnly&gt;</span></span>
+<span class="line"><span>      &lt;/ul&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      &lt;ClientOnly fallback=&quot; &quot;&gt;</span></span>
+<span class="line"><span>        &lt;div v-if=&quot;status === &#39;authenticated&#39; &amp;&amp; user?.email&quot; class=&quot;user-email&quot;&gt;</span></span>
+<span class="line"><span>          User logged in: &lt;strong&gt;{{ user.email }}&lt;/strong&gt;</span></span>
+<span class="line"><span>        &lt;/div&gt;</span></span>
+<span class="line"><span>        &lt;div v-else&gt;</span></span>
+<span class="line"><span>          No users logged in</span></span>
+<span class="line"><span>        &lt;/div&gt;</span></span>
+<span class="line"><span>      &lt;/ClientOnly&gt;</span></span>
+<span class="line"><span>    &lt;/nav&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;style scoped&gt;</span></span>
+<span class="line"><span>nav {</span></span>
+<span class="line"><span>  padding: 10px 10px 10px 0;</span></span>
+<span class="line"><span>  display: flex;</span></span>
+<span class="line"><span>  justify-content: space-between;</span></span>
+<span class="line"><span>  align-items: center;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>.logo {</span></span>
+<span class="line"><span>  position: relative;</span></span>
+<span class="line"><span>  bottom: 3px;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>.user-email {</span></span>
+<span class="line"><span>  margin-left: auto;</span></span>
+<span class="line"><span>  white-space: nowrap;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>ul {</span></span>
+<span class="line"><span>  list-style: none;</span></span>
+<span class="line"><span>  display: flex;</span></span>
+<span class="line"><span>  padding-inline-start: 0;</span></span>
+<span class="line"><span>  gap: 20px;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>li {</span></span>
+<span class="line"><span>  display: inline;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>li a, li button {</span></span>
+<span class="line"><span>  border: none;</span></span>
+<span class="line"><span>  background: none;</span></span>
+<span class="line"><span>  cursor: pointer;</span></span>
+<span class="line"><span>  font: inherit;</span></span>
+<span class="line"><span>  color: inherit;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>li a:hover, li button:hover {</span></span>
+<span class="line"><span>  color: #19e2b5;</span></span>
+<span class="line"><span>  text-decoration: underline;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>li a span.iconify {</span></span>
+<span class="line"><span>  vertical-align: middle;</span></span>
+<span class="line"><span>  font-size: 2.5rem;</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span>&lt;/style&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Edit <code>app.vue</code> to look like this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;template&gt;</span></span>
+<span class="line"><span>  &lt;div class=&quot;container&quot;&gt;</span></span>
+<span class="line"><span>    &lt;HeaderNav /&gt;</span></span>
+<span class="line"><span>    &lt;NuxtPage /&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/template&gt;</span></span></code></pre>
+</li>
+<li>
+<p>Create a navigation guard in <code>frontend/middleware/auth.global.ts</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>export default defineNuxtRouteMiddleware((to) =&gt; {</span></span>
+<span class="line"><span>  if (import.meta.client) {</span></span>
+<span class="line"><span>    const token = localStorage.getItem(&#39;token&#39;)</span></span>
+<span class="line"><span>    if (to.path === &#39;/private&#39; &amp;&amp; !token) {</span></span>
+<span class="line"><span>      return navigateTo(&#39;/login&#39;)</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>})</span></span></code></pre>
+</li>
+<li>
+<p>edit your <code>frontend/nuxt.config.ts</code> to this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>const isCI = process.env.CI === &#39;true&#39;</span></span>
+<span class="line"><span>const isDev = process.env.NODE_ENV !== &#39;production&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>export default defineNuxtConfig({</span></span>
+<span class="line"><span>  devServer: { port: 3001 },</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  modules: [</span></span>
+<span class="line"><span>    &#39;@nuxt/eslint&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/fonts&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/icon&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/image&#39;,</span></span>
+<span class="line"><span>    &#39;@nuxt/test-utils&#39;</span></span>
+<span class="line"><span>  ],</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  runtimeConfig: {</span></span>
+<span class="line"><span>    public: {</span></span>
+<span class="line"><span>      apiBase: isCI</span></span>
+<span class="line"><span>        ? &#39;http://backend:3000/api/v1&#39;</span></span>
+<span class="line"><span>        : isDev</span></span>
+<span class="line"><span>          ? &#39;http://localhost:3000/api/v1&#39;</span></span>
+<span class="line"><span>          : &#39;https://app001-backend.fly.dev/api/v1&#39;</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  },</span></span>
+<span class="line"><span>});</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test Locally</strong></p>
+<ul>
+<li>Test out the UI:
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd backend &amp;&amp; rails s</span></span>
+<span class="line"><span>cd frontend &amp;&amp; npm run dev</span></span></code></pre>
+</li>
+</ul>
+<p><strong>Test Prod</strong></p>
+<ul>
+<li>redeploy and test
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd backend &amp;&amp; fly deploy</span></span>
+<span class="line"><span>cd frontend &amp;&amp; fly deploy</span></span></code></pre>
+</li>
+</ul>
+<h3 id="11-swagger-api-documentation">11. Swagger API Documentation</h3>
+<ul>
+<li>
+<p>Install Swagger:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd ~/app/backend</span></span>
+<span class="line"><span>bundle add rswag</span></span>
+<span class="line"><span>bundle install</span></span>
+<span class="line"><span>rails g rswag:install</span></span></code></pre>
+</li>
+<li>
+<p>Set server urls in <code>backend/spec/swagger_helper.rb</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span># frozen_string_literal: true</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>require &#39;rails_helper&#39;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>RSpec.configure do |config|</span></span>
+<span class="line"><span>  config.openapi_root = Rails.root.join(&#39;swagger&#39;).to_s</span></span>
+<span class="line"><span>  config.openapi_specs = {</span></span>
+<span class="line"><span>    &#39;v1/swagger.yaml&#39; =&gt; {</span></span>
+<span class="line"><span>      openapi: &#39;3.0.1&#39;,</span></span>
+<span class="line"><span>      info: {</span></span>
+<span class="line"><span>        title: &#39;API V1&#39;,</span></span>
+<span class="line"><span>        version: &#39;v1&#39;</span></span>
+<span class="line"><span>      },</span></span>
+<span class="line"><span>      paths: {},</span></span>
+<span class="line"><span>      servers: [</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>          url: &#39;http://localhost:3000&#39;,</span></span>
+<span class="line"><span>          description: &#39;Local development&#39;</span></span>
+<span class="line"><span>        },</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>          url: &#39;https://app001-backend.fly.dev&#39;,</span></span>
+<span class="line"><span>          description: &#39;Production API server&#39;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>      ]</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>  config.openapi_format = :yaml</span></span>
+<span class="line"><span>end</span></span></code></pre>
+</li>
+<li>
+<p>Generate swagger for controllers:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rails generate rspec:swagger Api::V1::Auth::CurrentUserController</span></span>
+<span class="line"><span>rails generate rspec:swagger Api::V1::Auth::RegistrationsController</span></span>
+<span class="line"><span>rails generate rspec:swagger Api::V1::Auth::SessionsController</span></span>
+<span class="line"><span>rails generate rspec:swagger Api::V1::UsersController</span></span></code></pre>
+</li>
+<li>
+<p>Run to generate docs:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>rake rswag:specs:swaggerize</span></span>
+<span class="line"><span>rails s</span></span></code></pre>
+</li>
+<li>
+<p>In a browser, go to <a href="http://localhost:3000/api-docs">http://localhost:3000/api-docs</a> to view the API docs.</p>
+</li>
+<li>
+<p><code>fly deploy</code></p>
+</li>
+</ul>
+<p><strong>Test</strong></p>
+<ul>
+<li>In a browser, go to <a href="https://app001-backend.fly.dev/api-docs">https://app001-backend.fly.dev/api-docs</a> to view the API docs.</li>
+</ul>
+<h2 id="part-iii-flutter">Part III: Flutter</h2>
+<h2 id="add-flutter-with-webviews">Add Flutter With WebViews</h2>
+<ul>
+<li><code>cd</code> into the root folder of our app (<code>app/</code>)if you’re not there already</li>
+<li><code>flutter create flutter_app</code></li>
+<li><code>cd flutter_app</code></li>
+<li><code>flutter pub add webview_flutter</code></li>
+<li>Let’s modify <code>flutter_app/lib/main.dart</code> to load our web app (<em>And make sure to swap in our <code>&lt;frontend web url&gt;</code> towards the bottom</em>):</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>import &#39;package:flutter/material.dart&#39;;</span></span>
+<span class="line"><span>import &#39;package:webview_flutter/webview_flutter.dart&#39;;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>void main() {</span></span>
+<span class="line"><span>  runApp(const MyApp());</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>class MyApp extends StatelessWidget {</span></span>
+<span class="line"><span>  const MyApp({super.key});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  @override</span></span>
+<span class="line"><span>  Widget build(BuildContext context) {</span></span>
+<span class="line"><span>    return const MaterialApp(</span></span>
+<span class="line"><span>      debugShowCheckedModeBanner: false,</span></span>
+<span class="line"><span>      home: WebViewScreen(),</span></span>
+<span class="line"><span>    );</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>class WebViewScreen extends StatefulWidget {</span></span>
+<span class="line"><span>  const WebViewScreen({super.key});</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  @override</span></span>
+<span class="line"><span>  State&lt;WebViewScreen&gt; createState() =&gt; _WebViewScreenState();</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>class _WebViewScreenState extends State&lt;WebViewScreen&gt; {</span></span>
+<span class="line"><span>  late final WebViewController _controller;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  @override</span></span>
+<span class="line"><span>  void initState() {</span></span>
+<span class="line"><span>    super.initState();</span></span>
+<span class="line"><span>    _controller = WebViewController()</span></span>
+<span class="line"><span>      ..setJavaScriptMode(JavaScriptMode.unrestricted)</span></span>
+<span class="line"><span>      ..loadRequest(Uri.parse(&quot;https://app001-frontend.fly.dev&quot;));</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  @override</span></span>
+<span class="line"><span>  Widget build(BuildContext context) {</span></span>
+<span class="line"><span>    return Scaffold(</span></span>
+<span class="line"><span>      body: SafeArea( </span></span>
+<span class="line"><span>        child: WebViewWidget(controller: _controller),</span></span>
+<span class="line"><span>      ),</span></span>
+<span class="line"><span>    );</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<ul>
+<li>Let’s setup an android emulator:
+<ul>
+<li>Open android studio</li>
+<li>Tools -&gt; Device Manager</li>
+<li>Click the “plus” icon to create a new device -&gt; Create Virtual Device</li>
+<li>Pick the Pixel XL API 33 -&gt; Next</li>
+<li>Click the Additional Settings tab</li>
+<li>Scroll down to the bottom where it says Emulated Performance</li>
+<li>For graphics acceleration, select Hardware</li>
+<li>For RAM enter <code>4</code> for GB</li>
+<li>Click Finish</li>
+<li>Start the emulator you just created in the Device Manager area by clicking the play icon to the right of your new emulator’s name</li>
+</ul>
+</li>
+<li>Let’s setup an iPhone simulator:
+<ul>
+<li>Open XCode</li>
+<li>XCode -&gt; Open Developer Tool -&gt; Simulator</li>
+<li>That should open the iPhone simulator</li>
+</ul>
+</li>
+<li><code>flutter devices</code> &lt;- you should see both the android emulator and the iphone simulator listed there (and probably other stuff too).
+<ul>
+<li>note the ids of the android emulator and the iphone simulator. The id is the first thing to the right of the device name. For me the android emulator id is <code>emulator-5554</code> and the iphone simulator id is <code>36C6816E-25E8-4669-9505-2A9A2BC9CD47</code></li>
+</ul>
+</li>
+<li>open two terminal tabs
+<ul>
+<li>in the first tab run <code>flutter run -d &lt;iphone simulator id&gt;</code>
+<ul>
+<li>this takes a few minutes</li>
+<li>mid-run, this may print an error which can be ignored: “the following plugin(s) depend on a different Android NDK…”</li>
+</ul>
+</li>
+<li>in the second tab run <code>flutter run -d &lt;android emulator id&gt;</code>
+<ul>
+<li>this takes a few minutes</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="part-iv-s3-preparation">Part IV: S3 Preparation</h2>
+<h3 id="aws-s3-setup">AWS S3 Setup</h3>
+<p>Now we’ll create our AWS S3 account so we can store our user avatar images there as well as any other file uploads we’ll need. There are a few parts here. We want to create a S3 bucket to store the files. But a S3 bucket needs a IAM user. Both the S3 bucket and the IAM user need permissions policies. There’s a little bit of a chicken and egg issue here - when we create the user permissions policy, we need the S3 bucket name. But when we create the S3 bucket permissions, we need the IAM user name. So we’ll create everything and use placeholder strings in some of the policies. Then when we’re all done, we’ll go through the policies and update all the placeholder strings to what they really need to be.</p>
+<h4 id="aws-general-setup">AWS General Setup</h4>
+<ul>
+<li>login to AWS (<a href="https://aws.amazon.com">https://aws.amazon.com</a>)
+<ul>
+<li>If you don’t have an AWS account, you’ll need to sign up. It’s been awhile since I did this part - I think you have to create a root user and add you credit card or something. Google it if you run into trouble with this part.</li>
+</ul>
+</li>
+<li>at top right, select a region if currently says <code>global</code> (I use the <code>us-east-1</code> region). If all the region options are grayed out, ignore this for now and we’ll set it later.</li>
+<li>at top right click your name
+<ul>
+<li>next to Account ID, click the copy icon (two overlapping squares)</li>
+<li>paste your Account ID in your <code>~/app/.secrets</code> file (It pastes without the dashes. Leave it that way - you need it without the dashes.)</li>
+</ul>
+</li>
+</ul>
+<h4 id="aws-user-policy">AWS User Policy</h4>
+<ul>
+<li>in searchbar at top, enter <code>iam</code> and select IAM</li>
+<li>click <code>Policies</code> in the left sidebar under Access Managment
+<ul>
+<li>click <code>Create policy</code> towards the top right</li>
+<li>click the <code>JSON</code> tab on Policy Editor</li>
+<li>under Policy Editor select all with <code>command + a</code> and then hit <code>delete</code> to clear out everything there</li>
+<li>enter this under Policy Editor (we’ll update it shortly, once we have our user and bucket names):</li>
+</ul>
+</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>{</span></span>
+<span class="line"><span>	&quot;Version&quot;: &quot;2012-10-17&quot;,</span></span>
+<span class="line"><span>	&quot;Statement&quot;: [</span></span>
+<span class="line"><span>		{</span></span>
+<span class="line"><span>			&quot;Sid&quot;: &quot;AllowGetObject&quot;,</span></span>
+<span class="line"><span>			&quot;Effect&quot;: &quot;Allow&quot;,</span></span>
+<span class="line"><span>			 &quot;Action&quot;: [</span></span>
+<span class="line"><span>          &quot;s3:PutObject&quot;,</span></span>
+<span class="line"><span>          &quot;s3:GetObject&quot;,</span></span>
+<span class="line"><span>          &quot;s3:DeleteObject&quot;</span></span>
+<span class="line"><span>            ],</span></span>
+<span class="line"><span>			&quot;Resource&quot;: [&quot;arn:aws:s3:::&lt;development bucket name&gt;&quot;, &quot;arn:aws:s3:::&lt;production bucket name&gt;&quot;]</span></span>
+<span class="line"><span>		}</span></span>
+<span class="line"><span>	]</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<ul>
+<li>click Next towards bottom right</li>
+<li>for Policy Name, enter <code>app-s3-user-policy</code></li>
+<li>paste your policy name in your <code>.secrets</code> file</li>
+<li>click Create Policy towards the bottom right</li>
+</ul>
+<h4 id="aws-user">AWS User</h4>
+<ul>
+<li>click <code>Users</code> under Access Management in the left sidebar
+<ul>
+<li>click <code>Create User</code> towards the top right</li>
+<li>enter name, something like <code>app-s3-user</code> (add this to your <code>.secrets</code> file - you’ll need it later)</li>
+<li>click Next</li>
+<li>under Permissions Options click <code>Attach policies directly</code></li>
+<li>in the search bar under Permissions Policies, enter <code>app-s3-user-policy</code> -&gt; this should then show the policy we just created above (<code>app-s3-user-policy</code>) under Policy Name</li>
+<li>under Policy Name, click the checkbox to the left of <code>app-s3-user-policy</code></li>
+<li>click Next</li>
+<li>click Create User towards the bottom right</li>
+</ul>
+</li>
+<li>under Users, click the name of the user we just created (<code>app-user</code>)
+<ul>
+<li>click Security Credentials tab</li>
+<li>click <code>Create Access key</code> towards the top right
+<ul>
+<li>Use case: <code>Local code</code></li>
+<li>check <code>I understand the above recommendation</code></li>
+<li>Next</li>
+<li>Description tag value: enter tag name, like <code>app-user-access-key</code></li>
+<li>click <code>Create access key</code> towards the bottom right</li>
+<li>paste both the Access Key and the Secret Access Key into your <code>.secrets</code> file - this is important!</li>
+<li>click Done</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="aws-s3-bucket">AWS S3 Bucket</h4>
+<ul>
+<li>in searchbar at top, enter <code>s3</code> and select S3</li>
+<li>Create Bucket
+<ul>
+<li>for Bucket Name, enter something like <code>app-s3-bucket-development</code> (below when you click Create Bucket, it may tell you this bucket already exists and you will have to make it more unique. Regardless, add this to your <code>.secrets</code> file - you’ll need it later. Also, make sure it ends in <code>-development</code>.)</li>
+<li>under Object Ownership, click ACLs Enabled</li>
+<li>under Block Public Access settings
+<ul>
+<li>uncheck the first option, <code>Block All Public Access</code></li>
+<li>check the last two options, <code>Block public access to buckets and objects granted through new public bucket or access point policies</code> and <code>Block public and cross-account access to buckets and objects through any public bucket or access point policies</code></li>
+</ul>
+</li>
+<li>check <code>I acknowledge that the current settings might result in this bucket and the objects within becoming public.</code></li>
+<li>scroll to bottom and click Create Bucket (if nothing happens, scroll up and look for red error messages)</li>
+</ul>
+</li>
+<li>under General Purpose Buckets, click the name of the bucket you just created -&gt; then click the Permissions tab towards the top
+<ul>
+<li>in the Bucket Policy section, click Edit (to the right of “Bucket Policy”)</li>
+<li>copy/paste the boilerplate json bucket policy in the next line below this into the text editor area under Policy.</li>
+<li>here is the boilerplate json bucket policy:</li>
+</ul>
+</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>{</span></span>
+<span class="line"><span>    &quot;Version&quot;: &quot;2012-10-17&quot;,</span></span>
+<span class="line"><span>    &quot;Statement&quot;: [</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>            &quot;Effect&quot;: &quot;Allow&quot;,</span></span>
+<span class="line"><span>            &quot;Principal&quot;: {</span></span>
+<span class="line"><span>                &quot;AWS&quot;: &quot;arn:aws:iam::&lt;aws acct id without dashes&gt;:user/&lt;iam username&gt;&quot;</span></span>
+<span class="line"><span>            },</span></span>
+<span class="line"><span>            &quot;Action&quot;: &quot;s3:ListBucket&quot;,</span></span>
+<span class="line"><span>            &quot;Resource&quot;: &quot;arn:aws:s3:::&lt;bucket name&gt;&quot;</span></span>
+<span class="line"><span>        },</span></span>
+<span class="line"><span>        {</span></span>
+<span class="line"><span>            &quot;Effect&quot;: &quot;Allow&quot;,</span></span>
+<span class="line"><span>            &quot;Principal&quot;: {</span></span>
+<span class="line"><span>                &quot;AWS&quot;: &quot;arn:aws:iam::&lt;aws acct id without dashes&gt;:user/&lt;iam username&gt;&quot;</span></span>
+<span class="line"><span>            },</span></span>
+<span class="line"><span>            &quot;Action&quot;: [</span></span>
+<span class="line"><span>                &quot;s3:GetObject&quot;,</span></span>
+<span class="line"><span>                &quot;s3:PutObject&quot;,</span></span>
+<span class="line"><span>                &quot;s3:DeleteObject&quot;,</span></span>
+<span class="line"><span>                &quot;s3:PutObjectAcl&quot;</span></span>
+<span class="line"><span>            ],</span></span>
+<span class="line"><span>            &quot;Resource&quot;: &quot;arn:aws:s3:::&lt;bucket name&gt;/*&quot;</span></span>
+<span class="line"><span>        }</span></span>
+<span class="line"><span>    ]</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<ul>
+<li>Update all the <code>&lt;aws acct id without dashes&gt;</code>, <code>&lt;iam username&gt;</code> and <code>&lt;bucket name&gt;</code> parts in the policy now in the text editor area under Policy with the account number, user name and bucket name you jotted down above in your <code>~/app/.secrets</code> file.</li>
+<li>click Save Changes towards the bottom right</li>
+<li>in the Cross-Origin Resource Sharing (CORS) section, click <code>Edit</code> (to the right of “Cross-origin resource sharing (CORS)”)</li>
+<li>under Cross-origin Resource Sharing (CORS) add this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>[</span></span>
+<span class="line"><span>    {</span></span>
+<span class="line"><span>        &quot;AllowedHeaders&quot;: [</span></span>
+<span class="line"><span>            &quot;*&quot;</span></span>
+<span class="line"><span>        ],</span></span>
+<span class="line"><span>        &quot;AllowedMethods&quot;: [</span></span>
+<span class="line"><span>            &quot;GET&quot;,</span></span>
+<span class="line"><span>            &quot;POST&quot;,</span></span>
+<span class="line"><span>            &quot;PUT&quot;,</span></span>
+<span class="line"><span>            &quot;DELETE&quot;</span></span>
+<span class="line"><span>        ],</span></span>
+<span class="line"><span>        &quot;AllowedOrigins&quot;: [</span></span>
+<span class="line"><span>            &quot;*&quot;</span></span>
+<span class="line"><span>        ],</span></span>
+<span class="line"><span>        &quot;ExposeHeaders&quot;: [],</span></span>
+<span class="line"><span>        &quot;MaxAgeSeconds&quot;: 3000</span></span>
+<span class="line"><span>    }</span></span>
+<span class="line"><span>]</span></span></code></pre>
+<ul>
+<li>click Save Changes towards the bottom right</li>
+<li>now repeat this entire “AWS S3 Bucket” step above again, but make a production s3 bucket named something like <code>app-s3-bucket-production</code> and note the production bucket name in your <code>.secrets</code> file</li>
+<li>now that we know our bucket names, let’s update the our user policy with the bucket name
+<ul>
+<li>in the searchbar at the top of the page, type <code>iam</code> and select <code>IAM</code></li>
+<li>click <code>Policies</code> in the left sidebar under Access Management</li>
+<li>in the searchbar under Policies, type <code>app-s3-user-policy</code> -&gt; click <code>app-s3-user-policy</code> under Policy Name</li>
+<li>click Edit towards the top right</li>
+<li>in the Policy Editor text editor area, change the line <code>&quot;Resource&quot;: [&quot;arn:aws:s3:::&lt;development bucket name&gt;&quot;, &quot;arn:aws:s3:::&lt;production bucket name&gt;&quot;]</code> replace <code>&lt;development bucket name&gt;</code> and <code>&lt;production bucket name&gt;</code> with your development bucket name and production bucket name, respectively, in your <code>.secrets</code> file</li>
+<li>click Next towards the bottom right</li>
+<li>click Save Changes towards the bottom right</li>
+</ul>
+</li>
+<li>see what region you’re logged into
+<ul>
+<li>click the AWS logo in the top left</li>
+<li>in the top right there will be a region dropdown - click it</li>
+<li>look at the highlighted region in the dropdown and look for the region string to the right of it - something like <code>us-east-1</code></li>
+<li>paste your region string in your <code>~/app/.secrets</code> file in the <code>aws region</code> line</li>
+</ul>
+</li>
+<li>we’re now done with our S3 setup and our AWS dashboard, at least for now. So let’s go back to our terminal where we’re building out our rails backend</li>
+</ul>
+<h2 id="part-v-setup-s3-in-railsnuxt">Part V: Setup S3 In Rails/Nuxt</h2>
+<h3 id="s3-manual-avatar-upload">S3 Manual Avatar Upload</h3>
+<ul>
+<li>If you don’t already have the AWS CLI installed, run</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>brew install awscli</span></span></code></pre>
+<ul>
+<li>Then run this to configure the AWS CLI:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>aws configure</span></span></code></pre>
+<ul>
+<li>when prompted, enter these:
+<ul>
+<li>Your Access Key ID</li>
+<li>Your Secret Access Key</li>
+<li>Default region name: us-east-1 (or whatever you’re using)</li>
+<li>Default output format: json</li>
+</ul>
+</li>
+<li>Put a test avatar image (<code>avatar.png</code>) on your desktop</li>
+<li>Run this to upload the avatar to your S3:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>aws s3 cp ~/Desktop/avatar.png s3://app001-s3-bucket-production/avatars/avatar.png --acl public-read</span></span></code></pre>
+<ul>
+<li>Double check it uploaded:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>aws s3 ls s3://app001-s3-bucket-production/ --recursive</span></span></code></pre>
+<ul>
+<li>the url for the image is:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>https://&lt;bucket-name&gt;.s3.&lt;region&gt;.amazonaws.com/avatars/avatar.png</span></span></code></pre>
+<ul>
+<li>so for me that’s:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>https://app001-s3-bucket-production.s3.us-east-1.amazonaws.com/avatars/avatar.png</span></span></code></pre>
+<h3 id="hardcode-avatar-url-in-nuxt">Hardcode avatar url in Nuxt</h3>
+<ul>
+<li>Update the <code>&lt;ClientOnly&gt;</code> part of <code>frontend/components/HeaderNav.vue</code> to this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;ClientOnly fallback=&quot; &quot;&gt;</span></span>
+<span class="line"><span>  &lt;div v-if=&quot;status === &#39;authenticated&#39; &amp;&amp; user?.email&quot; class=&quot;user-email&quot;&gt;</span></span>
+<span class="line"><span>    User logged in: &lt;img src=&quot;https://app001-s3-bucket-production.s3.us-east-1.amazonaws.com/avatars/avatar.png&quot; &gt;&lt;strong&gt;{{ user.email }}&lt;/strong&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>  &lt;div v-else&gt;</span></span>
+<span class="line"><span>    No users logged in</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/ClientOnly&gt;</span></span></code></pre>
+<ul>
+<li>And update the <code>.user-email</code> part of the css in <code>frontend/components/HeaderNav.vue</code> to this:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>.user-email {</span></span>
+<span class="line"><span>  margin-left: auto;</span></span>
+<span class="line"><span>  white-space: nowrap;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>  img {</span></span>
+<span class="line"><span>    width: 30px;</span></span>
+<span class="line"><span>    height: 30px;</span></span>
+<span class="line"><span>    border-radius: 50%;</span></span>
+<span class="line"><span>    vertical-align: middle;</span></span>
+<span class="line"><span>    margin: 0 8px;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<ul>
+<li>Test it out locally:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd backend &amp;&amp; rails s</span></span>
+<span class="line"><span>cd frontend &amp;&amp; npm run dev</span></span></code></pre>
+<ul>
+<li>Then redeploy and test on prod:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd frontend &amp;&amp; fly deploy</span></span></code></pre>
+<h3 id="pull-avatar-url-from-backend-to-frontend">Pull avatar url from backend to frontend</h3>
+<ul>
+<li>Let’s add an avatar url string column to our user model on the backend:
+<ul>
+<li><code>cd backend</code></li>
+<li><code>rails g migration AddAvatarToUsers avatar:string</code></li>
+<li><code>rails db:migrate</code></li>
+</ul>
+</li>
+<li>Let’s update our <code>backend/db/seeds.db</code>:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>User.create!(email: &#39;test@mail.com&#39;, password: &#39;password&#39;, avatar: &#39;https://app001-s3-bucket-production.s3.us-east-1.amazonaws.com/avatars/avatar.png&#39;, admin: true)</span></span>
+<span class="line"><span>User.create!(email: &#39;test2@mail.com&#39;, password: &#39;password&#39;)</span></span></code></pre>
+<ul>
+<li>Update <code>app/serializers/user_serializer.rb</code> to include the avatar url:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class UserSerializer</span></span>
+<span class="line"><span>  include JSONAPI::Serializer</span></span>
+<span class="line"><span>  attributes :email, :uuid, :admin, :avatar</span></span>
+<span class="line"><span>end</span></span></code></pre>
+<ul>
+<li>Update <code>app/controllers/api/v1/auth/current_user_controller.rb</code> to include the avatar url:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>class Api::V1::Auth::CurrentUserController &lt; ApplicationController</span></span>
+<span class="line"><span>  before_action :authenticate_user!</span></span>
+<span class="line"><span>  def index</span></span>
+<span class="line"><span>    render json: UserSerializer.new(current_user).serializable_hash[:data][:attributes]</span></span>
+<span class="line"><span>  end</span></span>
+<span class="line"><span>end</span></span></code></pre>
+<ul>
+<li>Now let’s the <code>ClientOnly</code> part of <code>frontend/components/HeaderNav.vue</code> to:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;ClientOnly fallback=&quot; &quot;&gt;</span></span>
+<span class="line"><span>  &lt;div v-if=&quot;status === &#39;authenticated&#39; &amp;&amp; user?.email&quot; class=&quot;user-email&quot;&gt;</span></span>
+<span class="line"><span>    User logged in: &lt;img v-if=&quot;user?.avatar&quot; :src=&quot;user.avatar&quot; &gt;&lt;strong&gt;{{ user.email }}&lt;/strong&gt;</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>  &lt;div v-else&gt;</span></span>
+<span class="line"><span>    No users logged in</span></span>
+<span class="line"><span>  &lt;/div&gt;</span></span>
+<span class="line"><span>&lt;/ClientOnly&gt;</span></span></code></pre>
+<ul>
+<li>Test it out locally:</li>
+</ul>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>cd backend &amp;&amp; rails db:drop db:create db:migrate db:seed</span></span>
+<span class="line"><span>cd backend &amp;&amp; rails s</span></span>
+<span class="line"><span>cd frontend &amp;&amp; npm run dev</span></span></code></pre>
+<ul>
+<li>Redeploy:</li>
+<li><code>cd ~/app/backend &amp;&amp; fly deploy</code></li>
+<li><code>cd ~/app/frontend &amp;&amp; fly deploy</code></li>
+<li><code>fly console</code></li>
+<li><code>user = User.find(1)</code></li>
+<li><code>user.update!(avatar: &quot;https://app001-s3-bucket-production.s3.us-east-1.amazonaws.com/avatars/avatar.png&quot;)</code></li>
+<li>Then test it out in prod</li>
+</ul>
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>I hope you’ve enjoyed this tutorial and gotten everything working. If anything didn’t work for you, feel free to message me or leave a comment here!</p>
+<p><em>(End of Tutorial)</em></p> <!-- @ts-expect-error: Custom attributes for Utterances script --> <script src="https://utteranc.es/client.js" repo="mark-mcdermott/mark-mcdermott.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script> </div> </article>  <footer class="mt-12" data-astro-cid-olvf4l2g> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span data-astro-cid-i45duxs4>markmcdermott.io</span> </a> <p data-astro-cid-i45duxs4> <a href="https://github.com/mark-mcdermott" data-astro-cid-i45duxs4>github</a> |
+<a href="https://bsky.app/profile/mark-mcdermott.bsky.social" data-astro-cid-i45duxs4>bluesky</a> |
+<a href="https://www.linkedin.com/in/mark-mcdermott-6a174916/" data-astro-cid-i45duxs4>linkedin</a></p> <p data-astro-cid-i45duxs4>&copy; 2025 mark mcdermott </p>  </footer>  </body></html> 

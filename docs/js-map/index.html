@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width"><meta name="generator" content="Astro v5.13.2"><title>Mark McDermott</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DZnDNxNb.js"></script><link rel="stylesheet" href="/_astro/_slug_.yuvoUanq.css">
+<style>footer[data-astro-cid-olvf4l2g]{display:flex;flex-flow:column wrap;align-content:flex-end}.markdown{line-height:28px;--path: none;--radius-top: 12px;--radius-bottom: 12px;--padding-top: 1rem;--padding-bottom: 1rem}.markdown p{padding-bottom:2rem}.markdown a{border-bottom-width:1px;border-color:var(--link);color:var(--link)}.markdown hr{padding-top:2rem;opacity:.6}@media (prefers-color-scheme: dark){.markdown hr{opacity:.1}}.markdown h1{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:2.25rem;line-height:2.5rem;font-weight:700}.markdown h2{margin-top:.5rem;padding-bottom:2rem;font-family:Montserrat;font-size:1.875rem;line-height:2.25rem;font-weight:700}.markdown h3{margin-top:.5rem;padding-bottom:2rem;font-size:1.5rem;line-height:2rem;font-weight:700}.markdown h4{margin-top:.5rem;padding-bottom:2rem;font-size:1.25rem;line-height:1.75rem;font-weight:700}.markdown :not(pre)>code{background:var(--inlineCode-bg);color:var(--inlineCode-text);padding:.15em .2em .05em;white-space:normal}.markdown pre{margin-left:-1rem;margin-right:-1rem;margin-bottom:2rem;overflow-y:auto;padding:1rem;font-size:.875rem;line-height:1.25rem;clip-path:var(--path);border-top-right-radius:var(--radius-top);border-top-left-radius:var(--radius-top);border-bottom-right-radius:var(--radius-bottom);border-bottom-left-radius:var(--radius-bottom);padding-top:var(--padding-top);padding-bottom:var(--padding-bottom)}.markdown pre code{width:auto}.markdown blockquote{position:relative;left:-.5rem;margin-left:-1rem;margin-bottom:2rem;padding-left:1rem;font-style:italic;border-left:3px solid hsla(0,0%,0%,.9);border-left-color:inherit;opacity:.8}.markdown blockquote p{margin:0;padding:0}.markdown p img{margin-bottom:0}.markdown ul{margin-top:0;padding:0;margin-bottom:1.75rem;list-style-position:outside;list-style-image:none;list-style:disc}.markdown li{margin-bottom:.875rem}.markdown img{margin-bottom:2rem;max-width:100%}.markdown pre [data-highlighted-line]{margin-left:-16px;padding-left:12px;border-left:4px solid #ffa7c4;background-color:#022a4b;display:block;padding-right:1em}
+</style>
+<link rel="stylesheet" href="/_astro/index.DAnASyZ2.css"></head> <body class="mx-auto max-w-7xl bg-[--bg] px-5 py-12 text-[--text]">   <header class="mb-14 flex flex-row place-content-between"> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span>markmcdermott.io (js,&nbsp;ruby,&nbsp;...etc)</span> </a> <span class="min-w-20 relative top-[4px] italic">
+by
+<a class="scale-100 active:scale-100" target="_blank" href="https://github.com/mark-mcdermott"><img src="https://avatars.githubusercontent.com/u/9694783?v=5" alt="mark mcdermott" title="mark mcdermott" loading="lazy" decoding="async" fetchpriority="auto" width="32" height="32" class="relative -top-1 mx-2 inline h-8 w-8 rounded-full"> </a> </span> </header>   <article> <h1 class="text-[40px] font-black leading-[44px] text-[--title] font-['Montserrat']"> JavaScript Map </h1> <div class="mt-1 post-subtitle" style="color: var(--purple)"><p>A quick look at JavaScript's Map object</p></div> <p class="mb-6 mt-2 text-[13px] text-gray-700 dark:text-gray-300"> 02/20/2025 </p> <p class="mt-2 text-[13px] text-gray-700 dark:text-gray-300">
+read time: 2 mins </p> <div class="markdown mt-10"> <p>Brushing up on JavaScript’s <code>.map()</code> method today. I realized I was asking prospective hires at work a question about <code>.map()</code> that I didn’t know the answer to myself—not off the top of my head, at least.</p>
+<p>The <code>.map()</code> method on an array in JavaScript creates a new array, filled with the results of running a provided callback function on each array element. So <code>[1,2,3].map(x =&gt; x*2)</code> returns <code>[2, 4, 6]</code>.</p>
+<p><code>.map()</code> can take two parameters: the callback function and a value to use as <code>this</code> when executing the callback function.</p>
+<p>The callback function has three optional parameters: element, index and array. The element is the array element you manipulate with each iteration. The index is the (zero-based) count of how many iterations have happened so far. The array is the original array.</p>
+<h3 id="map-callback-parameter"><code>.map()</code> callback parameter</h3>
+<h4 id="element-parameter">element parameter</h4>
+<p><code>console.log([1,2,3].map(x =&gt; x*2))</code> outputs: <code>[2, 4, 6]</code> <code>// [1*2, 2*2, 3*2]</code></p>
+<h4 id="index-parameter">index parameter</h4>
+<p><code>console.log([1,2,3].map((x,i) =&gt; x*i))</code> outputs: <code>[0, 2, 6]</code> <code>// [1*0, 2*1, 3*2]</code></p>
+<h4 id="array-parameter">array parameter</h4>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>console.log([1,2,3].map((x,i,arr) =&gt; {</span></span>
+<span class="line"><span>  console.log(arr)</span></span>
+<span class="line"><span>  return x*i</span></span>
+<span class="line"><span>}))</span></span></code></pre>
+<p>outputs:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>[ 1, 2, 3 ]</span></span>
+<span class="line"><span>[ 1, 2, 3 ]</span></span>
+<span class="line"><span>[ 1, 2, 3 ]</span></span>
+<span class="line"><span>[ 0, 2, 6 ]</span></span></code></pre>
+<h3 id="map-thisarg-parameter"><code>.map()</code> <code>thisArg</code> parameter</h3>
+<p>ChatGPT gave me this nice example of a simple use of the <code>thisArg</code> parameter. In this exapmle, <code>multiplier</code> is the <code>thisArg</code> value:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8;overflow-x:auto" tabindex="0" data-language="plaintext"><code><span class="line"><span>const multiplier = {</span></span>
+<span class="line"><span>  factor: 2,</span></span>
+<span class="line"><span>  multiply(num) {</span></span>
+<span class="line"><span>    return num * this.factor;</span></span>
+<span class="line"><span>  }</span></span>
+<span class="line"><span>};</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const numbers = [1, 2, 3];</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>const doubled = numbers.map(function(num) {</span></span>
+<span class="line"><span>  return this.multiply(num);</span></span>
+<span class="line"><span>}, multiplier); // Passing multiplier as thisArg</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>console.log(doubled); // outputs [2, 4, 6]</span></span></code></pre>
+<h3 id="sources">Sources</h3>
+<ul>
+<li><em>MDN</em>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map">“Array.prototype.map()”</a>. accessed 2/20/25</li>
+<li>I used <a href="https://chatgpt.com">ChatGPT 4o</a> for the <code>thisArg</code> example. accessed 2/20/25</li>
+</ul> <!-- @ts-expect-error: Custom attributes for Utterances script --> <script src="https://utteranc.es/client.js" repo="mark-mcdermott/mark-mcdermott.github.io" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script> </div> </article>  <footer class="mt-12" data-astro-cid-olvf4l2g> <a class="inline-block text-2xl font-black font-['Montserrat'] hover:scale-[1.02]" target="_self" href="/"><span data-astro-cid-i45duxs4>markmcdermott.io</span> </a> <p data-astro-cid-i45duxs4> <a href="https://github.com/mark-mcdermott" data-astro-cid-i45duxs4>github</a> |
+<a href="https://bsky.app/profile/mark-mcdermott.bsky.social" data-astro-cid-i45duxs4>bluesky</a> |
+<a href="https://www.linkedin.com/in/mark-mcdermott-6a174916/" data-astro-cid-i45duxs4>linkedin</a></p> <p data-astro-cid-i45duxs4>&copy; 2025 mark mcdermott </p>  </footer>  </body></html> 
