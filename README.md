@@ -86,3 +86,27 @@ date: 'M/D/YY'
 href: use-a-slug-version-of-the-title-here
 ---
 ```
+
+## Using Obsidian As CMS
+As of now (9/10/25) posting from Obsidian works.
+- start a new note
+- add a title (TODO: let's make this auto create the `title` so we don't need `title` in the frontmatter)
+- add frontmatter like this:
+```
+---
+title: gh auth login
+date: 2025-09-09
+spoiler: Three ways to auth
+tags:
+  - github
+blog: mark-astro
+---
+```
+- write the post body under the frontmatter
+- to publish: command + p -> "QuickAdd: blog-switcher" -> "mark-astro"
+- wait 5 or 10 seconds
+- on success, it will say something along the lines of "post -> pushed to main"
+
+TODO: 
+- add a Publish button if possible (with a confirm)
+- add spell/grammar check option on right click or something
