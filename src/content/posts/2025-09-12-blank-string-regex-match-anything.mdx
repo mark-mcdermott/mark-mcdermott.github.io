@@ -1,0 +1,80 @@
+---
+title: 'Blank String Regex Match Anything'
+date: '2025-09-12'
+spoiler: 'Don''t use empty string fallbacks for regex'
+tags: []
+---
+A saw an interesting regex but today that I hadn't ever thought about before. A regex that is an empty string will match all values. That's because it will always say that it did indeed find "" in the string.
+
+## Example: Expected Case
+
+```
+const env = {
+	AUTH_API_URL: "auth.example.com"
+};
+
+const regex = new RegExp(env.AUTH_API_URL || "");
+
+const urls = [
+"https://google.com",
+"https://auth.example.com/login",
+"https://facebook.com"
+];
+
+let result = `AUTH_API_URL = "${env.AUTH_API_URL}"\n\n`;
+result += `RegExp source: ${regex}\n\n`;
+
+urls.forEach(url => {
+	result += `${url} => ${regex.test(url)}\n`;
+});
+
+document.getElementById("output").textContent = result;
+```
+
+which outputs this:
+```
+AUTH_API_URL = "auth.example.com"
+
+RegExp source: /auth.example.com/
+
+https://google.com => false
+https://auth.example.com/login => true
+https://facebook.com => false
+```
+
+In the expected case, `env.AUTH_API_URL` is set so the blank string fallback is not used. And the results are as we'd expect: `auth.example.com/login` has a match with `/auth.example.com/`, but `google.com` and `facebook.com` do not.
+## Example: Unexpected Case
+
+```
+const env = { };
+
+const regex = new RegExp(env.AUTH_API_URL || "");
+
+const urls = [
+"https://google.com",
+"https://auth.example.com/login",
+"https://facebook.com"
+];
+
+let result = `AUTH_API_URL = "${env.AUTH_API_URL}"\n\n`;
+result += `RegExp source: ${regex}\n\n`;
+
+urls.forEach(url => {
+	result += `${url} => ${regex.test(url)}\n`;
+});
+
+document.getElementById("output").textContent = result;
+```
+
+which outputs this:
+```
+AUTH_API_URL = "undefined"
+
+RegExp source: /(?:)/
+
+https://google.com => true
+https://auth.example.com/login => true
+https://facebook.com => true
+```
+
+In the unexpected case, `env.AUTH_API_URL` is not set, so the blank string fallback is used. And the results are not what I expected: `auth.example.com/login`, `google.com` and `facebook.com` all have matches with `/auth.example.com/`! That's because they all all have "" in them. 😬
