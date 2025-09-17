@@ -1,0 +1,14 @@
+---
+title: 'Rails Console Delete Multiple'
+date: '2025-09-17'
+spoiler: 'One-liner'
+tags: []
+---
+Today in Rails I wanted to find out if there was a one-liner that would delete multiple items by id in the Rails console. Turns out there is: 
+```
+User.where(id: [1,2,3]).each(&:destroy)
+```
+The `&:` is apparently Ruby shorthand for passing a method as a block and the above expands to:
+```
+User.find([1,2,3]).each { |record| record.destroy }
+```
